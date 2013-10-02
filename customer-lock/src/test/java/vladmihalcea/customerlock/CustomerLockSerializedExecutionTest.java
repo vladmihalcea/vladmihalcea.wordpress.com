@@ -21,7 +21,7 @@ public class CustomerLockSerializedExecutionTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomerLockSerializedExecutionTest.class);
 
-    private CustomerLockSerializedExecution customerLockSerializedExecution = new CustomerLockSerializedExecution();
+    private CustomerLockSerializedExecution<Long> customerLockSerializedExecution = new CustomerLockSerializedExecution<Long>();
 
     private CopyOnWriteArrayList<Long> buffer = new CopyOnWriteArrayList<Long>();
 

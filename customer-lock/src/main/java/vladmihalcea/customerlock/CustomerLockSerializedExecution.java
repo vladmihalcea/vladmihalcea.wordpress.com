@@ -7,15 +7,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * CustomerLockSerializedExecution - Serialize execution on locking based on a given number
+ * CustomerLockSerializedExecution - Lock execution based for a given customer
  *
  * @author Vlad Mihalcea
  */
-public class CustomerLockSerializedExecution {
+public class CustomerLockSerializedExecution<K> {
 
-    private Map<Long, ReentrantLock> lockMap = new HashMap<Long, ReentrantLock>();
+    private Map<K, ReentrantLock> lockMap = new HashMap<K, ReentrantLock>();
 
-    private synchronized Lock getLock(Long customerId) {
+    private synchronized Lock getLock(K customerId) {
         ReentrantLock lock = lockMap.get(customerId);
         if (lock == null) {
             lock = new ReentrantLock();
@@ -25,18 +25,18 @@ public class CustomerLockSerializedExecution {
     }
 
     /**
-     * Lock on the customer lock and execute the specific logic
+     * Lock on the customer and execute the specific logic
      *
      * @param customerId customer id
-     * @param callable   custom logic
+     * @param callable   custom logic callback
      */
-    public <T> void lockExecution(Long customerId, Callable<T> callable) {
+    public <T> void lockExecution(K customerId, Callable<T> callable) {
         Lock lock = getLock(customerId);
         try {
             lock.lockInterruptibly();
             callable.call();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CallableException(e, callable);
         } finally {
             lock.unlock();
         }
