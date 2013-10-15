@@ -52,7 +52,7 @@ public class HibernateBagDuplicateTest {
         Parent parent = transactionTemplate.execute(new TransactionCallback<Parent>() {
             @Override
             public Parent doInTransaction(TransactionStatus transactionStatus) {
-                Parent parent = entityManager.createQuery("from Parent where id =:parentId", Parent.class).setParameter("parentId", parentId).getSingleResult();
+                Parent parent = loadParent(parentId);
                 Child child1 = new Child();
                 child1.setName("child1");
                 Child child2 = new Child();
@@ -70,6 +70,13 @@ public class HibernateBagDuplicateTest {
         if(parent.getChildren().size() == 4) {
             LOG.error("Duplicates rows generated!");
         }
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus transactionStatus) {
+                assertEquals(2, loadParent(parentId).getChildren().size());
+                return null;
+            }
+        });
     }
 
     @Test
@@ -79,7 +86,7 @@ public class HibernateBagDuplicateTest {
         Parent parent = transactionTemplate.execute(new TransactionCallback<Parent>() {
             @Override
             public Parent doInTransaction(TransactionStatus transactionStatus) {
-                Parent parent = entityManager.createQuery("from Parent where id =:parentId", Parent.class).setParameter("parentId", parentId).getSingleResult();
+                Parent parent = loadParent(parentId);
                 Child child1 = new Child();
                 child1.setName("child1");
                 Child child2 = new Child();
@@ -103,6 +110,27 @@ public class HibernateBagDuplicateTest {
         Parent parent = transactionTemplate.execute(new TransactionCallback<Parent>() {
             @Override
             public Parent doInTransaction(TransactionStatus transactionStatus) {
+                Parent parent = loadParent(parentId);
+                parent.getChildren().size();
+                Child child1 = new Child();
+                child1.setName("child1");
+                Child child2 = new Child();
+                child2.setName("child2");
+                parent.addChild(child1);
+                parent.addChild(child2);
+                return parent;
+            }
+        });
+        assertEquals(2, parent.getChildren().size());
+    }
+
+    @Test
+    public void testFixByFlushingManually() {
+        final Long parentId = cleanAndSaveParent();
+
+        Parent parent = transactionTemplate.execute(new TransactionCallback<Parent>() {
+            @Override
+            public Parent doInTransaction(TransactionStatus transactionStatus) {
                 Parent parent = entityManager.createQuery("from Parent where id =:parentId", Parent.class).setParameter("parentId", parentId).getSingleResult();
                 parent.getChildren().size();
                 Child child1 = new Child();
@@ -111,6 +139,8 @@ public class HibernateBagDuplicateTest {
                 child2.setName("child2");
                 parent.addChild(child1);
                 parent.addChild(child2);
+                entityManager.flush();
+                assertEquals(2, loadParent(parentId).getChildren().size());
                 return parent;
             }
         });
@@ -129,6 +159,11 @@ public class HibernateBagDuplicateTest {
                 return parent.getId();
             }
         });
+    }
+
+    protected Parent loadParent(Long parentId) {
+        //return entityManager.createQuery("from Parent where id =:parentId", Parent.class).setParameter("parentId", parentId).getSingleResult();
+        return entityManager.find(Parent.class, parentId);
     }
 
 }
