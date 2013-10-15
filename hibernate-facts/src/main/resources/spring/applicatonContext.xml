@@ -16,7 +16,10 @@
 
     <bean id="btmConfig" factory-method="getConfiguration" class="bitronix.tm.TransactionManagerServices">
         <property name="serverId" value="spring-btm"/>
-        <property name="warnAboutZeroResourceTransaction" value="false"/>
+        <property name="warnAboutZeroResourceTransaction" value="true"/>
+        <property name="logPart1Filename" value="${btm.config.logpart1filename}"/>
+        <property name="logPart2Filename" value="${btm.config.logpart2filename}"/>
+        <property name="journal" value="${btm.config.journal:disk}"/>
     </bean>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">

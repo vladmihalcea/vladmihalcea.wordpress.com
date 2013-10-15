@@ -1,4 +1,4 @@
-package vladmihalcea.hibernatebagduplicaterows.model;
+package vladmihalcea.hibernate.model.bag;
 
 import javax.persistence.*;
 
