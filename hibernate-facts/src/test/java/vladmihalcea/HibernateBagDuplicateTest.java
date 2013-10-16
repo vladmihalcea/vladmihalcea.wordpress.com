@@ -106,9 +106,9 @@ public class HibernateBagDuplicateTest {
         return transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus transactionStatus) {
-                entityManager.createQuery("delete from Child").executeUpdate();
-                entityManager.createQuery("delete from Parent").executeUpdate();
-                assertTrue(entityManager.createQuery("from SetParent").getResultList().isEmpty());
+                entityManager.createQuery("delete from Child where id > 0").executeUpdate();
+                entityManager.createQuery("delete from Parent where id > 0").executeUpdate();
+                assertTrue(entityManager.createQuery("from Parent").getResultList().isEmpty());
                 Parent parent = new Parent();
                 entityManager.persist(parent);
                 return parent.getId();
@@ -117,7 +117,6 @@ public class HibernateBagDuplicateTest {
     }
 
     protected Parent loadParent(Long parentId) {
-        //return entityManager.createQuery("from SetParent where id =:parentId", SetParent.class).setParameter("parentId", parentId).getSingleResult();
         return entityManager.find(Parent.class, parentId);
     }
 

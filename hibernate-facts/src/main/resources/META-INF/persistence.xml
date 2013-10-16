@@ -11,6 +11,8 @@
         <class>vladmihalcea.hibernate.model.bag.Child</class>
         <class>vladmihalcea.hibernate.model.eagerset.SetParent</class>
         <class>vladmihalcea.hibernate.model.eagerset.SetChild</class>
+        <class>vladmihalcea.hibernate.model.linkedset.LinkedParent</class>
+        <class>vladmihalcea.hibernate.model.linkedset.LinkedChild</class>
         <class>vladmihalcea.hibernate.model.store.Product</class>
         <class>vladmihalcea.hibernate.model.store.Image</class>
         <class>vladmihalcea.hibernate.model.store.Version</class>

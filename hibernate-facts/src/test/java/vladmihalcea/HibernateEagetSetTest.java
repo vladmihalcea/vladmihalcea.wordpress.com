@@ -98,8 +98,8 @@ public class HibernateEagetSetTest {
         return transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus transactionStatus) {
-                entityManager.createQuery("delete from SetChild").executeUpdate();
-                entityManager.createQuery("delete from SetParent").executeUpdate();
+                entityManager.createQuery("delete from SetChild where id > 0").executeUpdate();
+                entityManager.createQuery("delete from SetParent where id > 0").executeUpdate();
                 assertTrue(entityManager.createQuery("from SetParent").getResultList().isEmpty());
                 SetParent parent = new SetParent();
                 entityManager.persist(parent);
