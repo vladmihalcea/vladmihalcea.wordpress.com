@@ -83,8 +83,10 @@ public class HibernateOperationsOrderTest {
 
                     Image frontImage = imageIterator.next();
                     assertEquals("front image", frontImage.getName());
+                    assertEquals(0, frontImage.getIndex());
                     Image sideImage = imageIterator.next();
                     assertEquals("side image", sideImage.getName());
+                    assertEquals(1, sideImage.getIndex());
 
                     Image backImage = new Image();
                     sideImage.setName("back image");
@@ -94,7 +96,7 @@ public class HibernateOperationsOrderTest {
                     product.addImage(backImage);
                     product.setName("tv set");
 
-                    entityManager.merge(product);
+                    entityManager.flush();
                     return null;
                 }
             });
@@ -126,7 +128,7 @@ public class HibernateOperationsOrderTest {
                 product.addImage(backImage);
                 product.setName("tv set");
 
-                entityManager.merge(product);
+                entityManager.flush();
                 return null;
             }
         });
