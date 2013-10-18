@@ -5,44 +5,34 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-public class Version {
+public class Importer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String type;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Image image;
+    private String name;
 
     public Long getId() {
         return id;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public int hashCode() {
         HashCodeBuilder hcb = new HashCodeBuilder();
-        hcb.append(type);
-        hcb.append(image);
+        hcb.append(name);
         return hcb.toHashCode();
     }
 
@@ -51,13 +41,12 @@ public class Version {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Version)) {
+        if (!(obj instanceof Importer)) {
             return false;
         }
-        Version that = (Version) obj;
+        Importer that = (Importer) obj;
         EqualsBuilder eb = new EqualsBuilder();
-        eb.append(type, that.getType());
-        eb.append(image, that.getImage());
+        eb.append(name, that.getName());
         return eb.isEquals();
     }
 
@@ -65,8 +54,7 @@ public class Version {
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this);
         tsb.append("id", id);
-        tsb.append("type", type);
-        tsb.append("image", image);
+        tsb.append("name", name);
         return tsb.toString();
     }
 }

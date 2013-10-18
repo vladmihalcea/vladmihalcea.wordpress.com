@@ -20,7 +20,7 @@ public class Image {
     @Column(unique = true)
     private int index;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Product product;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "image", orphanRemoval = true)
@@ -73,7 +73,7 @@ public class Image {
     public int hashCode() {
         HashCodeBuilder hcb = new HashCodeBuilder();
         hcb.append(name);
-        //hcb.append(product);
+        hcb.append(product);
         return hcb.toHashCode();
     }
 
@@ -88,7 +88,7 @@ public class Image {
         Image that = (Image) obj;
         EqualsBuilder eb = new EqualsBuilder();
         eb.append(name, that.getName());
-        //eb.append(product, that.getProduct());
+        eb.append(product, that.getProduct());
         return eb.isEquals();
     }
 

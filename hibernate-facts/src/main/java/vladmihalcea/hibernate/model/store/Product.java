@@ -17,9 +17,30 @@ public class Product {
 
     private String name;
 
+    @Column(unique = true)
+    private String code;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product", optional = false)
+    private WarehouseProductInfo warehouseProductInfo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "importer_id")
+    private Importer importer;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product", orphanRemoval = true)
     @OrderBy("index")
     private Set<Image> images = new LinkedHashSet<Image>();
+
+    public Product() {
+    }
+
+    public Product(String code) {
+        this.code = code;
+    }
 
     public Long getId() {
         return id;
@@ -33,8 +54,36 @@ public class Product {
         this.name = name;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
     public Set<Image> getImages() {
         return images;
+    }
+
+    public WarehouseProductInfo getWarehouseProductInfo() {
+        return warehouseProductInfo;
+    }
+
+    public void setWarehouseProductInfo(WarehouseProductInfo warehouseProductInfo) {
+        this.warehouseProductInfo = warehouseProductInfo;
+    }
+
+    public Importer getImporter() {
+        return importer;
+    }
+
+    public void setImporter(Importer importer) {
+        this.importer = importer;
     }
 
     public void addImage(Image image) {
@@ -45,6 +94,11 @@ public class Product {
     public void removeImage(Image image) {
         images.remove(image);
         image.setProduct(null);
+    }
+
+    public void addWarehouse(WarehouseProductInfo warehouseProductInfo) {
+        warehouseProductInfo.setProduct(this);
+        this.setWarehouseProductInfo(warehouseProductInfo);
     }
 
     @Override

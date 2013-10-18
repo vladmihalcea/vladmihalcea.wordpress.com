@@ -7,42 +7,27 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import javax.persistence.*;
 
 @Entity
-public class Version {
+public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String type;
+    @Column(unique = true)
+    private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Image image;
-
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public int hashCode() {
         HashCodeBuilder hcb = new HashCodeBuilder();
-        hcb.append(type);
-        hcb.append(image);
+        hcb.append(name);
         return hcb.toHashCode();
     }
 
@@ -51,13 +36,12 @@ public class Version {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Version)) {
+        if (!(obj instanceof Product)) {
             return false;
         }
-        Version that = (Version) obj;
+        Product that = (Product) obj;
         EqualsBuilder eb = new EqualsBuilder();
-        eb.append(type, that.getType());
-        eb.append(image, that.getImage());
+        eb.append(name, that.getName());
         return eb.isEquals();
     }
 
@@ -65,8 +49,7 @@ public class Version {
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this);
         tsb.append("id", id);
-        tsb.append("type", type);
-        tsb.append("image", image);
+        tsb.append("name", name);
         return tsb.toString();
     }
 }

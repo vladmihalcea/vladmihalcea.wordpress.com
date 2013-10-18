@@ -13,8 +13,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import vladmihalcea.hibernate.model.store.Image;
-import vladmihalcea.hibernate.model.store.Product;
+import vladmihalcea.hibernate.model.store.*;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -23,13 +22,14 @@ import javax.persistence.PersistenceException;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
-public class HibernateOperationsOrderTest {
+public class HibernateFetchStrategyTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HibernateOperationsOrderTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HibernateFetchStrategyTest.class);
 
     @PersistenceContext(unitName = "testPersistenceUnit")
     private EntityManager entityManager;
@@ -55,8 +55,14 @@ public class HibernateOperationsOrderTest {
         final Long productId = transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus transactionStatus) {
+
+                Company company = new Company();
+                company.setName("TV Company");
+                entityManager.persist(company);
+
                 Product product = new Product("tvCode");
                 product.setName("TV");
+                product.setCompany(company);
 
                 Image frontImage = new Image();
                 frontImage.setName("front image");
@@ -69,66 +75,48 @@ public class HibernateOperationsOrderTest {
                 product.addImage(frontImage);
                 product.addImage(sideImage);
 
+                WarehouseProductInfo warehouseProductInfo = new WarehouseProductInfo();
+                warehouseProductInfo.setQuantity(101);
+                product.addWarehouse(warehouseProductInfo);
+
+                Importer importer = new Importer();
+                importer.setName("Importer");
+                entityManager.persist(importer);
+                product.setImporter(importer);
+
                 entityManager.persist(product);
                 return product.getId();
             }
         });
-        try {
-            transactionTemplate.execute(new TransactionCallback<Void>() {
-                @Override
-                public Void doInTransaction(TransactionStatus transactionStatus) {
-                    Product product = entityManager.find(Product.class, productId);
-                    assertEquals(2, product.getImages().size());
-                    Iterator<Image> imageIterator = product.getImages().iterator();
-
-                    Image frontImage = imageIterator.next();
-                    assertEquals("front image", frontImage.getName());
-                    assertEquals(0, frontImage.getIndex());
-                    Image sideImage = imageIterator.next();
-                    assertEquals("side image", sideImage.getName());
-                    assertEquals(1, sideImage.getIndex());
-
-                    Image backImage = new Image();
-                    sideImage.setName("back image");
-                    sideImage.setIndex(1);
-
-                    product.removeImage(sideImage);
-                    product.addImage(backImage);
-                    product.setName("tv set");
-
-                    entityManager.flush();
-                    return null;
-                }
-            });
-            fail("Expected ConstraintViolationException");
-        } catch (PersistenceException expected) {
-            assertEquals(ConstraintViolationException.class, expected.getCause().getClass());
-        }
-
         transactionTemplate.execute(new TransactionCallback<Void>() {
             @Override
             public Void doInTransaction(TransactionStatus transactionStatus) {
                 Product product = entityManager.find(Product.class, productId);
-                assertEquals(2, product.getImages().size());
-                Iterator<Image> imageIterator = product.getImages().iterator();
+                assertNotNull(product);
 
-                Image frontImage = imageIterator.next();
-                assertEquals("front image", frontImage.getName());
-                Image sideImage = imageIterator.next();
-                assertEquals("side image", sideImage.getName());
+                product = entityManager.createQuery(
+                        "select p " +
+                        "from Product p " +
+                        "where p.id = :productId", Product.class)
+                        .setParameter("productId", productId)
+                        .getSingleResult();
+                assertNotNull(product);
 
-                Image backImage = new Image();
-                backImage.setName("back image");
-                backImage.setIndex(1);
+                product = entityManager.createQuery(
+                        "select p " +
+                        "from Product p " +
+                        "inner join fetch p.warehouseProductInfo " +
+                        "inner join fetch p.importer", Product.class).getSingleResult();
+                assertEquals(productId, product.getId());
+                Image image = entityManager.createQuery(
+                    "select i " +
+                    "from Image i " +
+                    "inner join fetch i.product p " +
+                    "where p.id = :productId", Image.class)
+                .setParameter("productId", productId)
+                .getResultList().get(0);
+                assertNotNull(image);
 
-                //http://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/event/internal/AbstractFlushingEventListener.html#performExecutions%28org.hibernate.event.spi.EventSource%29
-                product.removeImage(sideImage);
-                entityManager.flush();
-
-                product.addImage(backImage);
-                product.setName("tv set");
-
-                entityManager.flush();
                 return null;
             }
         });
@@ -141,6 +129,7 @@ public class HibernateOperationsOrderTest {
                 entityManager.createQuery("delete from Version where id > 0").executeUpdate();
                 entityManager.createQuery("delete from Image where id > 0").executeUpdate();
                 entityManager.createQuery("delete from Product where id > 0").executeUpdate();
+                entityManager.createQuery("delete from Company where id > 0").executeUpdate();
                 return null;
             }
         });

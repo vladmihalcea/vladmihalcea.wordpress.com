@@ -5,44 +5,46 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-public class Version {
+public class WarehouseProductInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String type;
+    private int quantity;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Image image;
+    @OneToOne(fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn
+    private Product product;
 
     public Long getId() {
         return id;
     }
 
-    public String getType() {
-        return type;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
-    public Image getImage() {
-        return image;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     @Override
     public int hashCode() {
         HashCodeBuilder hcb = new HashCodeBuilder();
-        hcb.append(type);
-        hcb.append(image);
+        hcb.append(product);
         return hcb.toHashCode();
     }
 
@@ -51,13 +53,12 @@ public class Version {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Version)) {
+        if (!(obj instanceof WarehouseProductInfo)) {
             return false;
         }
-        Version that = (Version) obj;
+        WarehouseProductInfo that = (WarehouseProductInfo) obj;
         EqualsBuilder eb = new EqualsBuilder();
-        eb.append(type, that.getType());
-        eb.append(image, that.getImage());
+        eb.append(product, that.getProduct());
         return eb.isEquals();
     }
 
@@ -65,8 +66,8 @@ public class Version {
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this);
         tsb.append("id", id);
-        tsb.append("type", type);
-        tsb.append("image", image);
+        tsb.append("name", quantity);
+        tsb.append("product", product);
         return tsb.toString();
     }
 }
