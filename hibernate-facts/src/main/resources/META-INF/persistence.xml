@@ -16,10 +16,21 @@
         <class>vladmihalcea.hibernate.model.linkedset.LinkedParent</class>
         <class>vladmihalcea.hibernate.model.linkedset.LinkedChild</class>
 
+        <class>vladmihalcea.hibernate.model.indexlist.Forest</class>
+        <class>vladmihalcea.hibernate.model.indexlist.Tree</class>
+        <class>vladmihalcea.hibernate.model.indexlist.Branch</class>
+        <class>vladmihalcea.hibernate.model.indexlist.Leaf</class>
+
+        <class>vladmihalcea.hibernate.model.baglist.BagForest</class>
+        <class>vladmihalcea.hibernate.model.baglist.BagTree</class>
+        <class>vladmihalcea.hibernate.model.baglist.BagBranch</class>
+        <class>vladmihalcea.hibernate.model.baglist.BagLeaf</class>
+
         <class>vladmihalcea.hibernate.model.store.Company</class>
         <class>vladmihalcea.hibernate.model.store.Product</class>
         <class>vladmihalcea.hibernate.model.store.Image</class>
         <class>vladmihalcea.hibernate.model.store.Version</class>
+        <class>vladmihalcea.hibernate.model.store.SubVersion</class>
 
         <properties>
             <property name="hibernate.transaction.manager_lookup_class"

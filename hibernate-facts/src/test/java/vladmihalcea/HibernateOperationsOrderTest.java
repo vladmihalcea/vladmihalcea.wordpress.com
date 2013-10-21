@@ -13,8 +13,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import vladmihalcea.hibernate.model.store.Company;
 import vladmihalcea.hibernate.model.store.Image;
 import vladmihalcea.hibernate.model.store.Product;
+import vladmihalcea.hibernate.model.store.WarehouseProductInfo;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -55,8 +57,14 @@ public class HibernateOperationsOrderTest {
         final Long productId = transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus transactionStatus) {
+
+                Company company = new Company();
+                company.setName("TV Company");
+                entityManager.persist(company);
+
                 Product product = new Product("tvCode");
                 product.setName("TV");
+                product.setCompany(company);
 
                 Image frontImage = new Image();
                 frontImage.setName("front image");
@@ -69,6 +77,10 @@ public class HibernateOperationsOrderTest {
                 product.addImage(frontImage);
                 product.addImage(sideImage);
 
+                WarehouseProductInfo warehouseProductInfo = new WarehouseProductInfo();
+                warehouseProductInfo.setQuantity(101);
+                product.addWarehouse(warehouseProductInfo);
+
                 entityManager.persist(product);
                 return product.getId();
             }
@@ -77,6 +89,8 @@ public class HibernateOperationsOrderTest {
             transactionTemplate.execute(new TransactionCallback<Void>() {
                 @Override
                 public Void doInTransaction(TransactionStatus transactionStatus) {
+
+
                     Product product = entityManager.find(Product.class, productId);
                     assertEquals(2, product.getImages().size());
                     Iterator<Image> imageIterator = product.getImages().iterator();
@@ -141,6 +155,7 @@ public class HibernateOperationsOrderTest {
                 entityManager.createQuery("delete from Version where id > 0").executeUpdate();
                 entityManager.createQuery("delete from Image where id > 0").executeUpdate();
                 entityManager.createQuery("delete from Product where id > 0").executeUpdate();
+                entityManager.createQuery("delete from Company where id > 0").executeUpdate();
                 return null;
             }
         });

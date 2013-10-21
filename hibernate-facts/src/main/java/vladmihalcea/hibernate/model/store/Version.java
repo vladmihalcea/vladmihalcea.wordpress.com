@@ -5,6 +5,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 public class Version {
@@ -17,6 +19,9 @@ public class Version {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Image image;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "version", orphanRemoval = true)
+    private Set<SubVersion> subVersions = new LinkedHashSet<SubVersion>();
 
     public Long getId() {
         return id;
@@ -36,6 +41,24 @@ public class Version {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public Set<SubVersion> getSubVersions() {
+        return subVersions;
+    }
+
+    public void setSubVersions(Set<SubVersion> subVersions) {
+        this.subVersions = subVersions;
+    }
+
+    public void addSubVersion(SubVersion subVersion) {
+        subVersions.add(subVersion);
+        subVersion.setVersion(this);
+    }
+
+    public void removeSubVersion(SubVersion subVersion) {
+        subVersions.remove(subVersion);
+        subVersion.setVersion(null);
     }
 
     @Override
