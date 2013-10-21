@@ -6,12 +6,21 @@ package vladmihalcea.hibernate.model.util;
 * @author Vlad Mihalcea
 */
 public class ClassId<T> {
+
     private final Class<T> clazz;
     private final Long id;
 
     public ClassId(Class<T> clazz, Long id) {
         this.clazz = clazz;
         this.id = id;
+    }
+
+    public Class<T> getClazz() {
+        return clazz;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override

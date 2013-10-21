@@ -14,23 +14,21 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import vladmihalcea.hibernate.model.baglist.*;
+import vladmihalcea.hibernate.model.baglist.BagBranch;
+import vladmihalcea.hibernate.model.baglist.BagForest;
+import vladmihalcea.hibernate.model.baglist.BagLeaf;
+import vladmihalcea.hibernate.model.baglist.BagTree;
 import vladmihalcea.hibernate.model.util.ClassId;
 import vladmihalcea.hibernate.model.util.EntityGraphBuilder;
 import vladmihalcea.hibernate.model.util.EntityVisitor;
-import vladmihalcea.hibernate.model.util.Identifiable;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
@@ -213,12 +211,9 @@ public class HibernateBagMultiLevelFetchTest {
     protected BagForest reconstructForest(List<BagLeaf> leaves, Long forestId) {
         EntityGraphBuilder entityGraphBuilder = new EntityGraphBuilder(new EntityVisitor[] {
                 BagLeaf.ENTITY_VISITOR, BagBranch.ENTITY_VISITOR, BagTree.ENTITY_VISITOR, BagForest.ENTITY_VISITOR
-        });
-        entityGraphBuilder.build(leaves);
-        @SuppressWarnings("unchecked")
-        ClassId<BagForest> forestClassId = new ClassId(BagForest.class, forestId);
-        BagForest forest = entityGraphBuilder.getObject(forestClassId);
-        return forest;
+        }).build(leaves);
+        ClassId<BagForest> forestClassId = new ClassId<BagForest>(BagForest.class, forestId);
+        return entityGraphBuilder.getEntityContext().getObject(forestClassId);
     }
 
     protected void clean() {

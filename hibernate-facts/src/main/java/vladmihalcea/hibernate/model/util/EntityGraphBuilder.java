@@ -13,24 +13,25 @@ public class EntityGraphBuilder {
 
     private final Map<Class, EntityVisitor> visitorsMap;
 
-    private Map<ClassId, Object> visitedMap = new HashMap<ClassId, Object>();
+    private final EntityContext entityContext;
 
     public EntityGraphBuilder(EntityVisitor[] entityVisitors) {
         visitorsMap = new HashMap<Class, EntityVisitor>();
         for (EntityVisitor entityVisitor : entityVisitors) {
             visitorsMap.put(entityVisitor.getTargetClazz(), entityVisitor);
         }
+        entityContext = new EntityContext(new HashMap<ClassId, Object>());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getObject(ClassId<T> classId) {
-        return (T) visitedMap.get(classId);
+    public EntityContext getEntityContext() {
+        return entityContext;
     }
 
-    public void build(List<? extends Identifiable> objects) {
+    public EntityGraphBuilder build(List<? extends Identifiable> objects) {
         for (Identifiable object : objects) {
             visit(object);
         }
+        return this;
     }
 
     private <T extends Identifiable, P extends Identifiable> void visit(T object) {
@@ -41,7 +42,7 @@ public class EntityGraphBuilder {
         if (entityVisitor == null) {
             throw new IllegalArgumentException("Class " + clazz + " has no entityVisitor!");
         }
-        entityVisitor.visit(object, visitedMap);
+        entityVisitor.visit(object, entityContext);
         P parent = entityVisitor.getParent(object);
         if (parent != null) {
             visit(parent);

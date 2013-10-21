@@ -1,7 +1,6 @@
 package vladmihalcea.hibernate.model.util;
 
 import java.util.List;
-import java.util.Map;
 
 /**
 * EntityVisitor - EntityVisitor
@@ -20,18 +19,20 @@ public abstract class EntityVisitor<T extends Identifiable, P extends Identifiab
         return targetClass;
     }
 
-    public void visit(T object, Map<ClassId, Object> visitedMap) {
+    public void visit(T object, EntityContext entityContext) {
         @SuppressWarnings("unchecked")
-        ClassId objectClassId = new ClassId(object.getClass(), object.getId());
-        boolean objectVisited = visitedMap.containsKey(objectClassId);
+        Class<T> clazz = (Class<T>) object.getClass();
+        ClassId<T> objectClassId = new ClassId<T>(clazz, object.getId());
+        boolean objectVisited = entityContext.isVisited(objectClassId);
         if (!objectVisited) {
-            visitedMap.put(objectClassId, object);
+            entityContext.visit(objectClassId, object);
         }
         P parent = getParent(object);
         if (parent != null) {
             @SuppressWarnings("unchecked")
-            ClassId parentClassId = new ClassId(parent.getClass(), parent.getId());
-            if (!visitedMap.containsKey(parentClassId)) {
+            Class<P> parentClass = (Class<P>) parent.getClass();
+            ClassId<P> parentClassId = new ClassId<P>(parentClass, parent.getId());
+            if (!entityContext.isVisited(parentClassId)) {
                 setChildren(parent);
             }
             List<T> children = getChildren(parent);
