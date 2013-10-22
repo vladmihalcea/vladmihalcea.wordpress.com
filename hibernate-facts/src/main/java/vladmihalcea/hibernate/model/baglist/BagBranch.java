@@ -76,4 +76,9 @@ public class BagBranch implements Identifiable {
         leaf.setBranch(this);
         getLeaves().add(leaf);
     }
+
+    public void removeLeaf(BagLeaf leaf) {
+        leaf.setBranch(null);
+        getLeaves().remove(leaf);
+    }
 }

@@ -158,6 +158,15 @@ public class HibernateBagMultiLevelFetchTest {
 
         }
 
+        forest = transactionTemplate.execute(new TransactionCallback<BagForest>() {
+            @Override
+            public BagForest doInTransaction(TransactionStatus transactionStatus) {
+                BagForest forest = entityManager.find(BagForest.class, forestId);
+                navigateForest(forest);
+                return forest;
+            }
+        });
+
         try {
             forest = transactionTemplate.execute(new TransactionCallback<BagForest>() {
                 @Override
@@ -196,6 +205,31 @@ public class HibernateBagMultiLevelFetchTest {
 
         forest = reconstructForest(leaves, forestId);
         navigateForest(forest);
+
+        BagBranch firstBranch = forest.getTrees().get(0).getBranches().get(0);
+        firstBranch.getLeaves().clear();
+
+        final BagForest toMergeForest = forest;
+
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus status) {
+                entityManager.merge(toMergeForest);
+                entityManager.flush();
+                return null;
+            }
+        });
+
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus status) {
+                BagForest savedForest = entityManager.find(BagForest.class, forestId);
+                if(!toMergeForest.equals(savedForest)) {
+                    LOG.error("Unsafe reusing the bag, changes haven't propagated!");
+                }
+                return null;
+            }
+        });
     }
 
     protected void navigateForest(BagForest forest) {
