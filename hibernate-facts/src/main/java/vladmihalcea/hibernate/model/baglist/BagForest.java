@@ -22,7 +22,7 @@ public class BagForest implements Identifiable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "forest")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "forest", orphanRemoval = true)
     private List<BagTree> trees = new ArrayList<BagTree>();
 
     public Long getId() {

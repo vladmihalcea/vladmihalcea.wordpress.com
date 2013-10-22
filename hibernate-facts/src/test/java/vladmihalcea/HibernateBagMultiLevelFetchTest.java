@@ -206,7 +206,7 @@ public class HibernateBagMultiLevelFetchTest {
         forest = reconstructForest(leaves, forestId);
         navigateForest(forest);
 
-        BagBranch firstBranch = forest.getTrees().get(0).getBranches().get(0);
+        final BagBranch firstBranch = forest.getTrees().get(0).getBranches().get(0);
         firstBranch.getLeaves().clear();
 
         final BagForest toMergeForest = forest;
@@ -214,7 +214,10 @@ public class HibernateBagMultiLevelFetchTest {
         transactionTemplate.execute(new TransactionCallback<Void>() {
             @Override
             public Void doInTransaction(TransactionStatus status) {
-                entityManager.merge(toMergeForest);
+                BagForest savedForest = entityManager.merge(toMergeForest);
+                if(!firstBranch.getLeaves().equals(savedForest.getTrees().get(0).getBranches().get(0).getLeaves())) {
+                    LOG.error("Unsafe reusing the bag, changes haven't propagated!");
+                }
                 entityManager.flush();
                 return null;
             }
@@ -224,7 +227,7 @@ public class HibernateBagMultiLevelFetchTest {
             @Override
             public Void doInTransaction(TransactionStatus status) {
                 BagForest savedForest = entityManager.find(BagForest.class, forestId);
-                if(!toMergeForest.equals(savedForest)) {
+                if(!firstBranch.getLeaves().equals(savedForest.getTrees().get(0).getBranches().get(0).getLeaves())) {
                     LOG.error("Unsafe reusing the bag, changes haven't propagated!");
                 }
                 return null;

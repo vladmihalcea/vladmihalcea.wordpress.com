@@ -1,5 +1,7 @@
 package vladmihalcea.hibernate.model.baglist;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import vladmihalcea.hibernate.model.util.EntityVisitor;
 import vladmihalcea.hibernate.model.util.Identifiable;
 
@@ -41,7 +43,7 @@ public class BagBranch implements Identifiable {
 
     private int index;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "branch")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "branch", orphanRemoval = true)
     private List<BagLeaf> leaves = new ArrayList<BagLeaf>();
 
     public Long getId() {
@@ -80,5 +82,26 @@ public class BagBranch implements Identifiable {
     public void removeLeaf(BagLeaf leaf) {
         leaf.setBranch(null);
         getLeaves().remove(leaf);
+    }
+
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hcb = new HashCodeBuilder();
+        hcb.append(index);
+        return hcb.toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof BagBranch)) {
+            return false;
+        }
+        BagBranch that = (BagBranch) obj;
+        EqualsBuilder eb = new EqualsBuilder();
+        eb.append(index, that.index);
+        return eb.isEquals();
     }
 }

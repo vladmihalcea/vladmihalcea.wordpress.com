@@ -1,5 +1,8 @@
 package vladmihalcea.hibernate.model.baglist;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.mapping.Bag;
 import vladmihalcea.hibernate.model.util.EntityVisitor;
 import vladmihalcea.hibernate.model.util.Identifiable;
 
@@ -60,5 +63,26 @@ public class BagLeaf implements Identifiable {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hcb = new HashCodeBuilder();
+        hcb.append(index);
+        return hcb.toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof BagLeaf)) {
+            return false;
+        }
+        BagLeaf that = (BagLeaf) obj;
+        EqualsBuilder eb = new EqualsBuilder();
+        eb.append(index, that.index);
+        return eb.isEquals();
     }
 }

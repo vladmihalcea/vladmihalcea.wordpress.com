@@ -42,7 +42,7 @@ public class BagTree implements Identifiable {
 
     private int index;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tree")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tree", orphanRemoval = true)
     private List<BagBranch> branches = new ArrayList<BagBranch>();
 
     public Long getId() {
