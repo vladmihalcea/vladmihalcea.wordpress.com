@@ -106,6 +106,14 @@ public class HibernateEqualsHashCodeTest {
     @Test
     public void testChildObjects() {
 
+        final Image frontImage = new Image();
+        frontImage.setName("front image");
+        frontImage.setIndex(0);
+
+        final Image sideImage = new Image();
+        sideImage.setName("side image");
+        sideImage.setIndex(1);
+
         final Long productId = transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus transactionStatus) {
@@ -117,14 +125,6 @@ public class HibernateEqualsHashCodeTest {
                 Product product = new Product("tvCode");
                 product.setName("TV");
                 product.setCompany(company);
-
-                Image frontImage = new Image();
-                frontImage.setName("front image");
-                frontImage.setIndex(0);
-
-                Image sideImage = new Image();
-                sideImage.setName("side image");
-                sideImage.setIndex(1);
 
                 product.addImage(frontImage);
                 product.addImage(sideImage);
@@ -150,13 +150,30 @@ public class HibernateEqualsHashCodeTest {
                         .getSingleResult();
             }
         });
-        Image frontImage = new Image();
-        frontImage.setName("front image");
-        frontImage.setProduct(product);
-        frontImage.setIndex(0);
-        assertTrue(product.getImages().contains(frontImage));
+        Image newFrontImage = new Image();
+        newFrontImage.setName("front image");
+        newFrontImage.setProduct(product);
+        newFrontImage.setIndex(0);
+        assertTrue(product.getImages().contains(newFrontImage));
 
         List<Image> images = transactionTemplate.execute(new TransactionCallback<List<Image>>() {
+            @Override
+            public List<Image> doInTransaction(TransactionStatus transactionStatus) {
+                List<Image> images = entityManager.createQuery(
+                        "select i from Image i", Image.class)
+                        .getResultList();
+                Image loadedImage = images.get(0);
+                if(loadedImage.getProduct().getClass() != Product.class) {
+                    LOG.error("Hibernate uses proxies so comparing classes doesn't work this way!");
+                }
+                assertTrue(loadedImage.getProduct() instanceof Product);
+                assertEquals(loadedImage, frontImage);
+                assertEquals(loadedImage.getName(), frontImage.getName());
+                return images;
+            }
+        });
+
+        images = transactionTemplate.execute(new TransactionCallback<List<Image>>() {
             @Override
             public List<Image> doInTransaction(TransactionStatus transactionStatus) {
                 return entityManager.createQuery(
