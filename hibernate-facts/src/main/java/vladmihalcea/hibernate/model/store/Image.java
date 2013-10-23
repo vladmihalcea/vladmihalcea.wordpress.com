@@ -15,12 +15,13 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(updatable = false)
     private String name;
 
     @Column(unique = true)
     private int index;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "image", orphanRemoval = true)
@@ -87,8 +88,8 @@ public class Image {
         }
         Image that = (Image) obj;
         EqualsBuilder eb = new EqualsBuilder();
-        eb.append(name, that.getName());
-        eb.append(product, that.getProduct());
+        eb.append(name, that.name);
+        eb.append(product, that.product);
         return eb.isEquals();
     }
 

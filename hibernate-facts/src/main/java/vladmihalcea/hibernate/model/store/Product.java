@@ -17,7 +17,7 @@ public class Product {
 
     private String name;
 
-    @Column(unique = true)
+    @Column(updatable = false)
     private String code;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -105,6 +105,7 @@ public class Product {
     public int hashCode() {
         HashCodeBuilder hcb = new HashCodeBuilder();
         hcb.append(name);
+        hcb.append(company);
         return hcb.toHashCode();
     }
 
@@ -119,6 +120,7 @@ public class Product {
         Product that = (Product) obj;
         EqualsBuilder eb = new EqualsBuilder();
         eb.append(name, that.getName());
+        eb.append(company, that.getCompany());
         return eb.isEquals();
     }
 

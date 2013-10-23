@@ -15,6 +15,7 @@ public class Version {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column
     private String type;
 
     @ManyToOne(fetch = FetchType.EAGER)

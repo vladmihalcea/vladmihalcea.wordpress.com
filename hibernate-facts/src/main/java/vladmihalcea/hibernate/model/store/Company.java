@@ -13,8 +13,12 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, updatable = false)
     private String name;
+
+    public Long getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -36,12 +40,12 @@ public class Company {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Product)) {
+        if (!(obj instanceof Company)) {
             return false;
         }
-        Product that = (Product) obj;
+        Company that = (Company) obj;
         EqualsBuilder eb = new EqualsBuilder();
-        eb.append(name, that.getName());
+        eb.append(name, that.name);
         return eb.isEquals();
     }
 

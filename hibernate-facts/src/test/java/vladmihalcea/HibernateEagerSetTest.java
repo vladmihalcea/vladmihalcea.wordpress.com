@@ -23,9 +23,9 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
-public class HibernateEagetSetTest {
+public class HibernateEagerSetTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HibernateEagetSetTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HibernateEagerSetTest.class);
 
     @PersistenceContext(unitName = "testPersistenceUnit")
     private EntityManager entityManager;
