@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/data/mongo
+          http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        ">
+
+    <bean id="mongoPropertiesPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <array>
+                <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                    <property name="locations">
+                        <list>
+                            <value>classpath*:properties/mongo.properties</value>
+                        </list>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <mongo:mongo id="mongo" host="${mongo.host}" port="${mongo.port}" />
+
+    <mongo:db-factory id="mongoDbFactory" mongo-ref="mongo" dbname="${mongo.dbname}"/>
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg ref="mongoDbFactory"/>
+        <constructor-arg ref="mappingConverter"/>
+        <property name="writeConcern">
+            <util:constant static-field="com.mongodb.WriteConcern.FSYNC_SAFE"/>
+        </property>
+        <property name="writeResultChecking">
+            <util:constant static-field="org.springframework.data.mongodb.core.WriteResultChecking.EXCEPTION"/>
+        </property>
+    </bean>
+
+    <mongo:mapping-converter id="mappingConverter">
+        <mongo:custom-converters base-package="vladmihalcea.**.mongo.converter" />
+    </mongo:mapping-converter>
+
+    <mongo:repositories base-package="vladmihalcea.mongo.dao"/>
+
+</beans>

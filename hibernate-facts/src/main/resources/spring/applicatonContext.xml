@@ -33,7 +33,7 @@
                 <property name="allowLocalTransactions" value="true" />
                 <property name="driverProperties">
                     <props>
-                        <prop key="user">${jdbc.username}</prop>
+                        <prop key="product">${jdbc.username}</prop>
                         <prop key="password">${jdbc.password}</prop>
                         <prop key="url">${jdbc.url}</prop>
                         <prop key="driverClassName">${jdbc.driverClassName}</prop>

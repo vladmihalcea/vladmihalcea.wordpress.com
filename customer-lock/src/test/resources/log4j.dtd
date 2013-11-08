@@ -47,7 +47,7 @@ element. -->
   reset                    (true|false) "false"
 >
 
-<!-- renderer elements allow the user to customize the conversion of  -->
+<!-- renderer elements allow the product to customize the conversion of  -->
 <!-- message objects to String.                                       -->
 
 <!ELEMENT renderer EMPTY>
