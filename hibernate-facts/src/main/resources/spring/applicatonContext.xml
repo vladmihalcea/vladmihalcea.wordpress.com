@@ -33,6 +33,7 @@
                 <property name="allowLocalTransactions" value="true" />
                 <property name="driverProperties">
                     <props>
+                        <!--the key should be "user", "product" raise exception no writable property-->
                         <prop key="product">${jdbc.username}</prop>
                         <prop key="password">${jdbc.password}</prop>
                         <prop key="url">${jdbc.url}</prop>
