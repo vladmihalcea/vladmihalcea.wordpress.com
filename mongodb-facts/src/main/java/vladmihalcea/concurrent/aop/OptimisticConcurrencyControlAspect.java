@@ -15,9 +15,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
- * OptimisticConcurrencyControlAspect - Aspect to retry optmistic locking attempts.
+ * OptimisticConcurrencyControlAspect - Aspect to retry optimistic locking attempts.
  *
- * @author vlad@artsoft-consult.ro
+ * @author Vlad Mihalcea
  */
 @Aspect
 public class OptimisticConcurrencyControlAspect {
