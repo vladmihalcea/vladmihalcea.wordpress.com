@@ -27,7 +27,7 @@ public class ProductServiceImpl implements ProductService {
     public Product updateName(Long id, String name) {
         Product product = productRepository.findOne(id);
         product.setName(name);
-        LOGGER.info("Updating name to {}", name);
+        LOGGER.info("Updating product {} name to {}", product, name);
         return productRepository.save(product);
     }
 }

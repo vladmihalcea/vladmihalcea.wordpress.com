@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Retry {
 
-    Class<? extends Throwable>[] on();
+    Class<? extends Exception>[] on();
 
     int times() default 1;
 }
