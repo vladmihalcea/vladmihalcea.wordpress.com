@@ -61,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
                 product.addWarehouse(warehouseProductInfo);
 
                 entityManager.persist(product);
+                entityManager.flush();
                 return product;
             }
         });
@@ -75,7 +76,9 @@ public class ProductServiceImpl implements ProductService {
                 Product product = entityManager.find(Product.class, id);
                 product.setName(name);
                 LOGGER.info("Updating product {} name to {}", product, name);
-                return entityManager.merge(product);
+                product = entityManager.merge(product);
+                entityManager.flush();
+                return product;
             }
         });
     }

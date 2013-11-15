@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.IllegalTransactionStateException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -18,10 +19,13 @@ import vladmihalcea.service.ProductService;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
@@ -53,7 +57,7 @@ public class OptimisticLockingTest {
         clean();
     }
 
-    /*@Test(expected = IllegalTransactionStateException.class)
+    @Test(expected = IllegalTransactionStateException.class)
     public void testRetryFailsOnTransaction() {
         itemService.saveItem();
     }
@@ -66,11 +70,14 @@ public class OptimisticLockingTest {
         } catch (OptimisticLockException expected) {
         }
         assertEquals(3, itemService.getRegisteredCalls());
-    }*/
+    }
 
     @Test
     public void testRetries() throws InterruptedException {
         final Product product = productService.newProduct();
+        assertEquals(0, product.getVersion());
+        Product savedProduct = productService.updateName(product.getId(), "name");
+        assertEquals(1, savedProduct.getVersion());
 
         final int threadsNumber = 10;
 
