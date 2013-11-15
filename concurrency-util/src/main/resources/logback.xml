@@ -19,8 +19,14 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    <logger name="vladmihalcea" level="trace">
-    </logger>
+
+    <logger name="org.springframework" level="warn"/>
+    <logger name="bitronix.tm" level="warn"/>
+    <logger name="org.hibernate" level="warn"/>
+    <logger name="org.hibernate.SQL" level="info"/>
+    <logger name="org.hibernate.util.JDBCExceptionReporter" level="error"/>
+
+    <logger name="vladmihalcea" level="debug"/>
     <root>
         <appender-ref ref="file"/>
         <appender-ref ref="console"/>
