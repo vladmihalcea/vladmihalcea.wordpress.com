@@ -33,6 +33,6 @@ public class ItemServiceImpl extends BaseServiceImpl implements ItemService {
     public void saveItems() {
         incrementCalls();
         LOGGER.info("Save Items!");
-        throw new OptimisticLockingException("Save Itesm!");
+        throw new OptimisticLockingException("Save Items!");
     }
 }
