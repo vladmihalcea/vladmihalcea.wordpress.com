@@ -12,21 +12,14 @@ import vladmihalcea.concurrent.service.ProductService;
  * @author Vlad Mihalcea
  */
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl extends BaseServiceImpl implements ProductService{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
 
-    private volatile int calls = 0;
-
     @Override
     public void saveProduct() {
-        calls++;
+        incrementCalls();
         LOGGER.info("Save Product!");
         throw new OptimisticLockingException("Save Product!");
-    }
-
-    @Override
-    public int getRegisteredCalls() {
-        return calls;
     }
 }

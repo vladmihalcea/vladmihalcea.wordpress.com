@@ -70,6 +70,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>${commons-lang.version}</version>
@@ -79,6 +85,13 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -108,6 +121,7 @@
         <aspectj.version>1.6.8</aspectj.version>
         <spring.version>3.2.2.RELEASE</spring.version>
         <commons-lang.version>2.5</commons-lang.version>
+        <mockito.version>1.8.5</mockito.version>
     </properties>
 
 </project>

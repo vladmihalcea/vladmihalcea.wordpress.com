@@ -5,9 +5,7 @@ package vladmihalcea.concurrent.service;
  *
  * @author Vlad Mihalcea
  */
-public interface CustomerService {
+public interface CustomerService extends BaseService {
 
     void saveCustomer();
-
-    int getRegisteredCalls();
 }

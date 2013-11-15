@@ -8,6 +8,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.transaction.IllegalTransactionStateException;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 import vladmihalcea.concurrent.Retry;
 
@@ -39,6 +41,11 @@ public class OptimisticConcurrencyControlAspect {
         Class<? extends Throwable>[] retryOn = retryAnnotation.on();
         Assert.isTrue(times > 0, "@Retry{times} should be greater than 0!");
         Assert.isTrue(retryOn.length > 0, "@Retry{on} should have at least one Throwable!");
+        if (retryAnnotation.failInTransaction() && TransactionSynchronizationManager.isActualTransactionActive()) {
+            throw new IllegalTransactionStateException(
+                    "You shouldn't retry an operation from withing an existing Transaction." +
+                    "This is because we can't retry if the current Transaction was already rollbacked!");
+        }
         LOGGER.info("Proceed with {} retries on {}", times, Arrays.toString(retryOn));
         return tryProceeding(pjp, times, retryOn);
     }
@@ -47,7 +54,7 @@ public class OptimisticConcurrencyControlAspect {
         try {
             return proceed(pjp);
         } catch (Throwable throwable) {
-            if(isRetryThrowable(throwable, retryOn) && times-- > 0) {
+            if (isRetryThrowable(throwable, retryOn) && times-- > 0) {
                 LOGGER.info("Optimistic locking detected, {} remaining retries on {}", times, Arrays.toString(retryOn));
                 return tryProceeding(pjp, times, retryOn);
             }
@@ -57,9 +64,9 @@ public class OptimisticConcurrencyControlAspect {
 
     private boolean isRetryThrowable(Throwable throwable, Class<? extends Throwable>[] retryOn) {
         Throwable[] causes = ExceptionUtils.getThrowables(throwable);
-        for(Throwable cause : causes) {
-            for(Class<? extends Throwable> retryThrowable : retryOn) {
-                if(retryThrowable.isAssignableFrom(cause.getClass())) {
+        for (Throwable cause : causes) {
+            for (Class<? extends Throwable> retryThrowable : retryOn) {
+                if (retryThrowable.isAssignableFrom(cause.getClass())) {
                     return true;
                 }
             }
@@ -72,7 +79,7 @@ public class OptimisticConcurrencyControlAspect {
         Method method = signature.getMethod();
         Retry retryAnnotation = AnnotationUtils.findAnnotation(method, Retry.class);
 
-        if(retryAnnotation != null) {
+        if (retryAnnotation != null) {
             return retryAnnotation;
         }
 

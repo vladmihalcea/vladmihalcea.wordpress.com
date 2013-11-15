@@ -15,4 +15,6 @@ public @interface Retry {
     Class<? extends Exception>[] on();
 
     int times() default 1;
+
+    boolean failInTransaction() default true;
 }

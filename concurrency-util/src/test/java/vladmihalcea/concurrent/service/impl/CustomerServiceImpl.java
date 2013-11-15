@@ -13,22 +13,15 @@ import vladmihalcea.concurrent.service.CustomerService;
  * @author Vlad Mihalcea
  */
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl extends BaseServiceImpl implements CustomerService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServiceImpl.class);
-
-    private volatile int calls = 0;
 
     @Override
     @Retry(times = 2, on = OptimisticLockingException.class)
     public void saveCustomer() {
-        calls++;
+        incrementCalls();
         LOGGER.info("Save Customer!");
         throw new OptimisticLockingException("Save Customer!");
-    }
-
-    @Override
-    public int getRegisteredCalls() {
-        return calls;
     }
 }

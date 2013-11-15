@@ -4,12 +4,11 @@ import vladmihalcea.concurrent.Retry;
 import vladmihalcea.concurrent.exception.OptimisticLockingException;
 
 /**
- * ProductService - Product Service
+ * BaseService - Base Service
  *
  * @author Vlad Mihalcea
  */
-public interface ProductService extends BaseService {
+public interface BaseService {
 
-    @Retry(times = 2, on = OptimisticLockingException.class)
-    void saveProduct();
+    int getRegisteredCalls();
 }
