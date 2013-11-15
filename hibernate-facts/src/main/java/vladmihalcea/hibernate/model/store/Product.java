@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import vladmihalcea.hibernate.model.bag.Child;
 
 import javax.persistence.*;
+import javax.persistence.Version;
 import java.util.*;
 
 @Entity
@@ -34,6 +35,9 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product", orphanRemoval = true)
     @OrderBy("index")
     private Set<Image> images = new LinkedHashSet<Image>();
+
+    @Version
+    private int version;
 
     public Product() {
     }
@@ -86,6 +90,10 @@ public class Product {
         this.importer = importer;
     }
 
+    public final int getVersion() {
+        return version;
+    }
+
     public void addImage(Image image) {
         images.add(image);
         image.setProduct(this);
@@ -129,6 +137,7 @@ public class Product {
         ToStringBuilder tsb = new ToStringBuilder(this);
         tsb.append("id", id);
         tsb.append("name", name);
+        tsb.append("version", version);
         return tsb.toString();
     }
 }
