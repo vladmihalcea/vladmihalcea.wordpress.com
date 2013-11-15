@@ -1,9 +1,6 @@
 package vladmihalcea.concurrent;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Retry - mark a given method for retrying.
@@ -12,6 +9,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Inherited
 public @interface Retry {
 
     Class<? extends Exception>[] on();

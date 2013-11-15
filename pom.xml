@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>concurrency-util</module>
         <module>customer-lock</module>
         <module>hibernate-facts</module>
         <module>mongodb-facts</module>

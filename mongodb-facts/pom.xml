@@ -130,6 +130,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.wordpress.vladmihalcea</groupId>
+            <artifactId>concurrency-util</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>
