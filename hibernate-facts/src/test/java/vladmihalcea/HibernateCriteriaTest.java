@@ -63,6 +63,17 @@ public class HibernateCriteriaTest {
                 product1.setName("TV");
                 product1.setCompany(company);
 
+                Image frontImage1 = new Image();
+                frontImage1.setName("front image 1");
+                frontImage1.setIndex(0);
+
+                Image sideImage1 = new Image();
+                sideImage1.setName("side image 1");
+                sideImage1.setIndex(1);
+
+                product1.addImage(frontImage1);
+                product1.addImage(sideImage1);
+
                 WarehouseProductInfo warehouseProductInfo1 = new WarehouseProductInfo();
                 warehouseProductInfo1.setQuantity(101);
                 product1.addWarehouse(warehouseProductInfo1);
@@ -70,6 +81,17 @@ public class HibernateCriteriaTest {
                 Product product2 = new Product("tcSetCode");
                 product2.setName("TV Set");
                 product2.setCompany(company);
+
+                Image frontImage2 = new Image();
+                frontImage2.setName("front image 1");
+                frontImage2.setIndex(2);
+
+                Image sideImage2 = new Image();
+                sideImage2.setName("side image 1");
+                sideImage2.setIndex(3);
+
+                product2.addImage(frontImage2);
+                product2.addImage(sideImage2);
 
                 WarehouseProductInfo warehouseProductInfo2 = new WarehouseProductInfo();
                 warehouseProductInfo2.setQuantity(55);
@@ -119,11 +141,11 @@ public class HibernateCriteriaTest {
                 criteria.add(cb.like(cb.lower(product.get(Product_.name)), "%tv%"));
 
                 Subquery<Long> subQuery = query.subquery(Long.class);
-                Root<WarehouseProductInfo> warehouseProductInfoRoot = subQuery.from(WarehouseProductInfo.class);
-                Join<WarehouseProductInfo, Product> productJoin = warehouseProductInfoRoot.join("product");
+                Root<Image> infoRoot = subQuery.from(Image.class);
+                Join<Image, Product> productJoin = infoRoot.join("product");
                 subQuery.select(productJoin.<Long>get(Product_.id));
 
-                subQuery.where(cb.gt(warehouseProductInfoRoot.get(WarehouseProductInfo_.quantity), 50));
+                subQuery.where(cb.gt(infoRoot.get(Image_.index), 0));
                 criteria.add(cb.in(product.get(Product_.id)).value(subQuery));
                 query.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
                 return entityManager.createQuery(query).getResultList();
@@ -137,13 +159,13 @@ public class HibernateCriteriaTest {
             public List<Product> doInTransaction(TransactionStatus transactionStatus) {
                 CriteriaBuilder cb = entityManager.getCriteriaBuilder();
                 CriteriaQuery<Product> query = cb.createQuery(Product.class);
-                Root<WarehouseProductInfo> warehouseProductInfoRoot = query.from(WarehouseProductInfo.class);
-                Join<WarehouseProductInfo, Product> productJoin = warehouseProductInfoRoot.join("product");
+                Root<Image> imageRoot = query.from(Image.class);
+                Join<Image, Product> productJoin = imageRoot.join("product");
                 query.select(productJoin);
                 query.distinct(true);
                 List<Predicate> criteria = new ArrayList<Predicate>();
                 criteria.add(cb.like(cb.lower(productJoin.get(Product_.name)), "%tv%"));
-                criteria.add(cb.gt(warehouseProductInfoRoot.get(WarehouseProductInfo_.quantity), 50));
+                criteria.add(cb.gt(imageRoot.get(Image_.index), 0));
                 query.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
                 return entityManager.createQuery(query).getResultList();
             }
@@ -155,14 +177,14 @@ public class HibernateCriteriaTest {
             @Override
             public List<Product> doInTransaction(TransactionStatus transactionStatus) {
                 return entityManager.createQuery(
-                        "select p " +
-                        "from WarehouseProductInfo w " +
-                        "inner join w.product p " +
-                        "where " +
-                        "   lower(p.name) like :name and " +
-                        "   w.quantity > :quantity ", Product.class)
+                        "select distinct p " +
+                                "from Image i " +
+                                "inner join i.product p " +
+                                "where " +
+                                "   lower(p.name) like :name and " +
+                                "   i.index > :index ", Product.class)
                         .setParameter("name", "%tv%")
-                        .setParameter("quantity", 50)
+                        .setParameter("index", 0)
                 .getResultList();
             }
         });
