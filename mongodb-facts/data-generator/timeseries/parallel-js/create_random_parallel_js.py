@@ -17,14 +17,16 @@ collection = db.randomData
 
 total_documents_count = 50 * 1000 * 1000;
 inserted_documents_count = 0
-sleep_seconds = 5
+sleep_seconds = 1
 sleep_count = 0
 
 for i in range(cpu_count):
 	documents_number = str(total_documents_count/cpu_count)
-	script = 'create_random_' + str(i + 1) + '.js'
-	print script
-	subprocess.Popen(['mongo', 'random', script]) 
+	script_name = 'create_random_' + str(i + 1) + '.bat'
+	script_file = open(script_name, 'w')
+	script_file.write('mongo random --eval "var arg1=' + documents_number +';arg2=' + str(i + 1) +'" ../create_random.js');
+	script_file.close()
+	subprocess.Popen(script_name) 
 	
 start = datetime.now();
 
@@ -34,6 +36,5 @@ while (inserted_documents_count < total_documents_count) is True:
 		print 'Inserted ', inserted_documents_count, ' documents.'		
 	if (inserted_documents_count < total_documents_count):
 		sleep_count += 1
-		time.sleep(sleep_seconds)	
 
 print 'Inserting ', total_documents_count, ' took ', (datetime.now() - start).total_seconds(), 's'		

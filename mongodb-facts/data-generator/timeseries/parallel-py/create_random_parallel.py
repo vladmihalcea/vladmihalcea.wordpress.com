@@ -23,7 +23,7 @@ sleep_count = 0
 for i in range(cpu_count):
 	documents_number = str(total_documents_count/cpu_count)
 	print documents_number
-	subprocess.Popen(['python', 'create_random.py', documents_number, str(i)])
+	subprocess.Popen(['python', '../create_random.py', documents_number, str(i)])
 
 start = datetime.now();
 
