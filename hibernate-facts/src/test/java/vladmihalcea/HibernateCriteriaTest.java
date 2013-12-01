@@ -18,13 +18,11 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
@@ -83,11 +81,11 @@ public class HibernateCriteriaTest {
                 product2.setCompany(company);
 
                 Image frontImage2 = new Image();
-                frontImage2.setName("front image 1");
+                frontImage2.setName("front image 2");
                 frontImage2.setIndex(2);
 
                 Image sideImage2 = new Image();
-                sideImage2.setName("side image 1");
+                sideImage2.setName("side image 2");
                 sideImage2.setIndex(3);
 
                 product2.addImage(frontImage2);
@@ -119,12 +117,27 @@ public class HibernateCriteriaTest {
         assertNotNull(getProduct_Mercilessly());
         assertNotNull(getProduct_Mercifully());
         assertNotNull(getProduct_Gracefully());
+
+        assertImageProductDTOs(getImageProductDTOs());
     }
 
     private void assertProducts(List<Product> products) {
         assertEquals(2, products.size());
         assertEquals("TV", products.get(0).getName());
         assertEquals("TV Set", products.get(1).getName());
+    }
+
+    private void assertImageProductDTOs(List<ImageProductDTO> imageProductDTOs) {
+        assertEquals(3, imageProductDTOs.size());
+        int index = 0;
+        assertEquals("front image 2", imageProductDTOs.get(index).getImageName());
+        assertEquals("TV Set", imageProductDTOs.get(index).getProductName());
+        index++;
+        assertEquals("side image 1", imageProductDTOs.get(index).getImageName());
+        assertEquals("TV", imageProductDTOs.get(index).getProductName());
+        index++;
+        assertEquals("side image 2", imageProductDTOs.get(index).getImageName());
+        assertEquals("TV Set", imageProductDTOs.get(index).getProductName());
     }
 
     private List<Product> getProducts_Mercilessly() {
@@ -142,7 +155,7 @@ public class HibernateCriteriaTest {
 
                 Subquery<Long> subQuery = query.subquery(Long.class);
                 Root<Image> infoRoot = subQuery.from(Image.class);
-                Join<Image, Product> productJoin = infoRoot.join("product");
+                Join<Image, Product> productJoin = infoRoot.join(Image_.product);
                 subQuery.select(productJoin.<Long>get(Product_.id));
 
                 subQuery.where(cb.gt(infoRoot.get(Image_.index), 0));
@@ -160,7 +173,7 @@ public class HibernateCriteriaTest {
                 CriteriaBuilder cb = entityManager.getCriteriaBuilder();
                 CriteriaQuery<Product> query = cb.createQuery(Product.class);
                 Root<Image> imageRoot = query.from(Image.class);
-                Join<Image, Product> productJoin = imageRoot.join("product");
+                Join<Image, Product> productJoin = imageRoot.join(Image_.product);
                 query.select(productJoin);
                 query.distinct(true);
                 List<Predicate> criteria = new ArrayList<Predicate>();
@@ -189,6 +202,27 @@ public class HibernateCriteriaTest {
             }
         });
     }
+
+    private List<ImageProductDTO> getImageProductDTOs() {
+        return transactionTemplate.execute(new TransactionCallback<List<ImageProductDTO>>() {
+            @Override
+            public List<ImageProductDTO> doInTransaction(TransactionStatus transactionStatus) {
+                CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+                CriteriaQuery<ImageProductDTO> query = cb.createQuery(ImageProductDTO.class);
+                Root<Image> imageRoot = query.from(Image.class);
+                Join<Image, Product> productJoin = imageRoot.join(Image_.product);
+                query.distinct(true);
+                List<Predicate> criteria = new ArrayList<Predicate>();
+                criteria.add(cb.like(cb.lower(productJoin.get(Product_.name)), "%tv%"));
+                criteria.add(cb.gt(imageRoot.get(Image_.index), 0));
+                query.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
+                query.select(cb.construct(ImageProductDTO.class, imageRoot.get(Image_.name), productJoin.get(Product_.name)))
+                        .orderBy(cb.asc(imageRoot.get(Image_.name)));
+                return entityManager.createQuery(query).getResultList();
+            }
+        });
+    }
+
 
     private Product getProduct_Mercilessly() {
         return transactionTemplate.execute(new TransactionCallback<Product>() {
