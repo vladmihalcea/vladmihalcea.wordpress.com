@@ -1,42 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+<persistence version="2.0"
+             xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
-    <persistence-unit name="testPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="testPersistenceUnit" transaction-type="JTA">
 
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
 
-        <non-jta-data-source>dataSource</non-jta-data-source>
+        <jta-data-source>dataSource</jta-data-source>
 
-        <class>vladmihalcea.hibernate.model.bag.Parent</class>
-        <class>vladmihalcea.hibernate.model.bag.Child</class>
-
-        <class>vladmihalcea.hibernate.model.eagerset.SetParent</class>
-        <class>vladmihalcea.hibernate.model.eagerset.SetChild</class>
-
-        <class>vladmihalcea.hibernate.model.linkedset.LinkedParent</class>
-        <class>vladmihalcea.hibernate.model.linkedset.LinkedChild</class>
-
-        <class>vladmihalcea.hibernate.model.indexlist.Forest</class>
-        <class>vladmihalcea.hibernate.model.indexlist.Tree</class>
-        <class>vladmihalcea.hibernate.model.indexlist.Branch</class>
-        <class>vladmihalcea.hibernate.model.indexlist.Leaf</class>
-
-        <class>vladmihalcea.hibernate.model.baglist.BagForest</class>
-        <class>vladmihalcea.hibernate.model.baglist.BagTree</class>
-        <class>vladmihalcea.hibernate.model.baglist.BagBranch</class>
-        <class>vladmihalcea.hibernate.model.baglist.BagLeaf</class>
-
-        <class>vladmihalcea.hibernate.model.store.Company</class>
-        <class>vladmihalcea.hibernate.model.store.Product</class>
-        <class>vladmihalcea.hibernate.model.store.Image</class>
-        <class>vladmihalcea.hibernate.model.store.Version</class>
-        <class>vladmihalcea.hibernate.model.store.SubVersion</class>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
 
         <properties>
-            <property name="hibernate.transaction.manager_lookup_class"
-                      value="org.hibernate.transaction.BTMTransactionManagerLookup"/>
-            <property name="hibernate.transaction.factory_class"
-                      value="org.hibernate.engine.transaction.internal.jta.CMTTransactionFactory"/>
+            <property name="hibernate.archive.autodetection"
+                      value="class, hbm"/>
+
+            <property name="hibernate.transaction.jta.platform"
+                      value="org.hibernate.service.jta.platform.internal.BitronixJtaPlatform" />
             
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.HSQLDialect"/>

@@ -32,7 +32,7 @@
                 <property name="className" value="bitronix.tm.resource.jdbc.lrc.LrcXADataSource"/>
                 <property name="uniqueName" value="testDataSource"/>
                 <property name="minPoolSize" value="0"/>
-                <property name="maxPoolSize" value="100"/>
+                <property name="maxPoolSize" value="5"/>
                 <property name="allowLocalTransactions" value="true" />
                 <property name="driverProperties">
                     <props>
