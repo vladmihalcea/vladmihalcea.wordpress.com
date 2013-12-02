@@ -103,6 +103,12 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-codegen-maven</artifactId>
             <version>3.1.0</version>
