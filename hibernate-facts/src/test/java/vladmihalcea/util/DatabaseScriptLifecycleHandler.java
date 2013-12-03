@@ -19,7 +19,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 public class DatabaseScriptLifecycleHandler implements InitializingBean, DisposableBean {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(DatabaseScriptLifecycleHandler.class);
