@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.IllegalTransactionStateException;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -17,7 +16,6 @@ import vladmihalcea.hibernate.model.store.Product;
 import vladmihalcea.service.ItemService;
 import vladmihalcea.service.ProductService;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
@@ -43,14 +41,7 @@ public class OptimisticLockingTest {
     private EntityManager entityManager;
 
     @Autowired
-    private PlatformTransactionManager platformTransactionManager;
-
     private TransactionTemplate transactionTemplate;
-
-    @PostConstruct
-    private void init() {
-        transactionTemplate = new TransactionTemplate(platformTransactionManager);
-    }
 
     @Before
     public void beforeTest() {

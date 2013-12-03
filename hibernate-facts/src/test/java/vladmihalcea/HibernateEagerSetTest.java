@@ -7,14 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import vladmihalcea.hibernate.model.eagerset.SetChild;
 import vladmihalcea.hibernate.model.eagerset.SetParent;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -31,14 +29,7 @@ public class HibernateEagerSetTest {
     private EntityManager entityManager;
 
     @Autowired
-    private PlatformTransactionManager platformTransactionManager;
-
     private TransactionTemplate transactionTemplate;
-
-    @PostConstruct
-    private void init() {
-        transactionTemplate = new TransactionTemplate(platformTransactionManager);
-    }
 
     @Test
     public void test() {

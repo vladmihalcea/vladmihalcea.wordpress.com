@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -22,7 +21,6 @@ import vladmihalcea.hibernate.model.util.ClassId;
 import vladmihalcea.hibernate.model.util.EntityGraphBuilder;
 import vladmihalcea.hibernate.model.util.EntityVisitor;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
@@ -40,14 +38,7 @@ public class HibernateBagMultiLevelFetchTest {
     private EntityManager entityManager;
 
     @Autowired
-    private PlatformTransactionManager platformTransactionManager;
-
     private TransactionTemplate transactionTemplate;
-
-    @PostConstruct
-    private void init() {
-        transactionTemplate = new TransactionTemplate(platformTransactionManager);
-    }
 
     @Before
     public void beforeTest() {

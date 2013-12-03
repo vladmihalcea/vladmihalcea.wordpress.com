@@ -1,7 +1,6 @@
 package vladmihalcea;
 
 import org.hibernate.LazyInitializationException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -19,17 +17,12 @@ import vladmihalcea.hibernate.model.store.Image;
 import vladmihalcea.hibernate.model.store.Product;
 import vladmihalcea.hibernate.model.store.WarehouseProductInfo;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
@@ -41,14 +34,7 @@ public class HibernateEqualsHashCodeTest {
     private EntityManager entityManager;
 
     @Autowired
-    private PlatformTransactionManager platformTransactionManager;
-
     private TransactionTemplate transactionTemplate;
-
-    @PostConstruct
-    private void init() {
-        transactionTemplate = new TransactionTemplate(platformTransactionManager);
-    }
 
     @Before
     public void beforeTest() {

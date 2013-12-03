@@ -12,39 +12,32 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <version>${spring.version}</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>2.0.0</version>
+            <version>${hsqldb.version}</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.2.6.Final</version>
+            <version>${hibernate.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
-            <version>1.0.0.Final</version>
+            <version>${hibernate.jpamodel.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -55,69 +48,62 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.1</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
-            <version>2.2</version>
+            <version>${cglib.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
+            <version>${commons.lang.version}</version>
         </dependency>
 
-        <!-- Bitronix TM -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-codegen-maven</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.codehaus.btm</groupId>
             <artifactId>btm</artifactId>
-            <version>2.1.1</version>
+            <version>${btm.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-codegen-maven</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq</artifactId>
-            <version>3.1.0</version>
         </dependency>
 
         <dependency>
@@ -152,11 +138,140 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>3.1.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>generate-test-sql-scripts</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="maven_test_classpath" refid="maven.test.classpath"/>
+                                <path id="hibernate_tools_path">
+                                    <pathelement path="${maven_test_classpath}"/>
+                                </path>
+                                <property name="hibernate_tools_classpath" refid="hibernate_tools_path"/>
+                                <taskdef name="hibernatetool"
+                                         classname="org.hibernate.tool.ant.HibernateToolTask"/>
+                                <mkdir dir="${project.build.directory}/test-classes/hsqldb"/>
+                                <hibernatetool destdir="${project.build.directory}/test-classes/hsqldb">
+                                    <classpath refid="hibernate_tools_path"/>
+                                    <jpaconfiguration persistenceunit="testPersistenceUnit"
+                                                      propertyfile="src/test/resources/META-INF/spring/jdbc.properties"/>
+                                    <hbm2ddl drop="false" create="true" export="false"
+                                             outputfilename="create_db.sql"
+                                             delimiter=";" format="true"/>
+                                    <hbm2ddl drop="true" create="false" export="false"
+                                             outputfilename="drop_db.sql"
+                                             delimiter=";" format="true"/>
+                                </hibernatetool>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-entitymanager</artifactId>
+                        <version>${hibernate.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.slf4j</groupId>
+                                <artifactId>slf4j-api</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-tools</artifactId>
+                        <version>${hibernate.tools.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-commons-annotations</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                        <version>${slf4j.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                        <version>${slf4j.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/target/generated-sources/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hsqldb</groupId>
+                        <artifactId>hsqldb</artifactId>
+                        <version>${hsqldb.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <driver>org.hsqldb.jdbc.JDBCDriver</driver>
+                    <url>jdbc:hsqldb:file:${project.build.directory}/hsqldb/db;shutdown=true</url>
+                    <username>sa</username>
+                    <password></password>
+                    <autocommit>true</autocommit>
+                    <settingsKey>hsql-db-test</settingsKey>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-test-compile-data</id>
+                        <phase>process-test-resources</phase>
+                        <inherited>true</inherited>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <orderFile>ascending</orderFile>
+                            <fileset>
+                                <basedir>${project.build.directory}/test-classes/hsqldb/</basedir>
+                                <includes>
+                                    <include>create_db.sql</include>
+                                </includes>
+                            </fileset>
+                            <autocommit>true</autocommit>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -166,26 +281,27 @@
                     <dependency>
                         <groupId>org.hsqldb</groupId>
                         <artifactId>hsqldb</artifactId>
-                        <version>2.0.0</version>
+                        <version>${hsqldb.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
                     <jdbc>
-                        <driver>org.hsqldb.jdbcDriver</driver>
-                        <url>jdbc:hsqldb:mem:test</url>
+                        <driver>org.hsqldb.jdbc.JDBCDriver</driver>
+                        <url>jdbc:hsqldb:file:${project.build.directory}/hsqldb/db</url>
                         <user>sa</user>
                         <password></password>
                     </jdbc>
                     <generator>
-                        <name>org.jooq.util.DefaultGenerator</name>
+                        <name>org.jooq.util.JavaGenerator</name>
                         <database>
                             <name>org.jooq.util.hsqldb.HSQLDBDatabase</name>
                             <includes>.*</includes>
                             <excludes></excludes>
-                            <inputSchema>public</inputSchema>
+                            <inputSchema>PUBLIC</inputSchema>
                         </database>
+                        <generate></generate>
                         <target>
-                            <packageName>org.jooq.util.maven.example</packageName>
+                            <packageName>vladmihalcea.jooq.schema</packageName>
                             <directory>target/generated-sources/jooq</directory>
                         </target>
                     </generator>
@@ -218,5 +334,19 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <properties>
+        <junit.version>4.8.1</junit.version>
+        <spring.version>3.1.1.RELEASE</spring.version>
+        <hsqldb.version>2.2.8</hsqldb.version>
+        <hibernate.version>4.2.6.Final</hibernate.version>
+        <hibernate.jpamodel.version>1.0.0.Final</hibernate.jpamodel.version>
+        <hibernate.tools.version>4.0.0-CR1</hibernate.tools.version>
+        <slf4j.version>1.6.1</slf4j.version>
+        <cglib.version>2.2</cglib.version>
+        <commons.lang.version>2.5</commons.lang.version>
+        <jooq.version>3.1.0</jooq.version>
+        <btm.version>2.1.1</btm.version>
+    </properties>
 
 </project>
