@@ -1,5 +1,6 @@
 package vladmihalcea;
 
+import org.jooq.DSLContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static vladmihalcea.jooq.schema.Tables.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
@@ -33,6 +35,9 @@ public class HibernateCriteriaTest {
 
     @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private DSLContext jooqContext;
 
     @Before
     public void beforeTest() {
@@ -110,6 +115,7 @@ public class HibernateCriteriaTest {
         assertNotNull(getProduct_Gracefully());
 
         assertImageProductDTOs(getImageProductDTOs());
+        assertImageProductDTOs(getImageProductDTOs_JOOQ());
     }
 
     private void assertProducts(List<Product> products) {
@@ -194,27 +200,6 @@ public class HibernateCriteriaTest {
         });
     }
 
-    private List<ImageProductDTO> getImageProductDTOs() {
-        return transactionTemplate.execute(new TransactionCallback<List<ImageProductDTO>>() {
-            @Override
-            public List<ImageProductDTO> doInTransaction(TransactionStatus transactionStatus) {
-                CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-                CriteriaQuery<ImageProductDTO> query = cb.createQuery(ImageProductDTO.class);
-                Root<Image> imageRoot = query.from(Image.class);
-                Join<Image, Product> productJoin = imageRoot.join(Image_.product);
-                query.distinct(true);
-                List<Predicate> criteria = new ArrayList<Predicate>();
-                criteria.add(cb.like(cb.lower(productJoin.get(Product_.name)), "%tv%"));
-                criteria.add(cb.gt(imageRoot.get(Image_.index), 0));
-                query.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
-                query.select(cb.construct(ImageProductDTO.class, imageRoot.get(Image_.name), productJoin.get(Product_.name)))
-                        .orderBy(cb.asc(imageRoot.get(Image_.name)));
-                return entityManager.createQuery(query).getResultList();
-            }
-        });
-    }
-
-
     private Product getProduct_Mercilessly() {
         return transactionTemplate.execute(new TransactionCallback<Product>() {
             @Override
@@ -263,6 +248,42 @@ public class HibernateCriteriaTest {
                         .setParameter("code", "tvCode")
                         .setParameter("quantity", 50)
                         .getSingleResult();
+            }
+        });
+    }
+
+    private List<ImageProductDTO> getImageProductDTOs() {
+        return transactionTemplate.execute(new TransactionCallback<List<ImageProductDTO>>() {
+            @Override
+            public List<ImageProductDTO> doInTransaction(TransactionStatus transactionStatus) {
+                CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+                CriteriaQuery<ImageProductDTO> query = cb.createQuery(ImageProductDTO.class);
+                Root<Image> imageRoot = query.from(Image.class);
+                Join<Image, Product> productJoin = imageRoot.join(Image_.product);
+                query.distinct(true);
+                List<Predicate> criteria = new ArrayList<Predicate>();
+                criteria.add(cb.like(cb.lower(productJoin.get(Product_.name)), "%tv%"));
+                criteria.add(cb.gt(imageRoot.get(Image_.index), 0));
+                query.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
+                query.select(cb.construct(ImageProductDTO.class, imageRoot.get(Image_.name), productJoin.get(Product_.name)))
+                        .orderBy(cb.asc(imageRoot.get(Image_.name)));
+                return entityManager.createQuery(query).getResultList();
+            }
+        });
+    }
+
+    private List<ImageProductDTO> getImageProductDTOs_JOOQ() {
+        return transactionTemplate.execute(new TransactionCallback<List<ImageProductDTO>>() {
+            @Override
+            public List<ImageProductDTO> doInTransaction(TransactionStatus transactionStatus) {
+                return jooqContext
+                        .select(IMAGE.NAME, PRODUCT.NAME)
+                        .from(IMAGE)
+                        .join(PRODUCT).on(IMAGE.PRODUCT_ID.equal(PRODUCT.ID))
+                        .where(PRODUCT.NAME.likeIgnoreCase("%tv%"))
+                            .and(IMAGE.INDEX.greaterThan(0))
+                        .orderBy(IMAGE.NAME.asc())
+                        .fetch().into(ImageProductDTO.class);
             }
         });
     }

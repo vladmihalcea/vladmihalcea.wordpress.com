@@ -143,7 +143,7 @@
                 <executions>
                     <execution>
                         <id>generate-test-sql-scripts</id>
-                        <phase>generate-test-resources</phase>
+                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -209,25 +209,6 @@
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${basedir}/target/generated-sources/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
                 <dependencies>
                     <dependency>
@@ -247,7 +228,7 @@
                 <executions>
                     <execution>
                         <id>create-test-compile-data</id>
-                        <phase>process-test-resources</phase>
+                        <phase>generate-test-sources</phase>
                         <inherited>true</inherited>
                         <goals>
                             <goal>execute</goal>
@@ -265,13 +246,12 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
                 <executions>
                     <execution>
-                        <phase>process-test-classes</phase>
+                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -302,10 +282,28 @@
                         <generate></generate>
                         <target>
                             <packageName>vladmihalcea.jooq.schema</packageName>
-                            <directory>target/generated-sources/jooq</directory>
+                            <directory>${project.build.directory}/generated-sources/java</directory>
                         </target>
                     </generator>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -345,7 +343,7 @@
         <slf4j.version>1.6.1</slf4j.version>
         <cglib.version>2.2</cglib.version>
         <commons.lang.version>2.5</commons.lang.version>
-        <jooq.version>3.1.0</jooq.version>
+        <jooq.version>3.2.0</jooq.version>
         <btm.version>2.1.1</btm.version>
     </properties>
 
