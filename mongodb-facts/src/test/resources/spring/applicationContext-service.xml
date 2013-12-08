@@ -9,6 +9,6 @@
           http://www.springframework.org/schema/context/spring-context-3.0.xsd
         ">
 
-    <context:component-scan base-package="vladmihalcea.mongo.service"/>
+    <context:component-scan base-package="org.vladmihalcea.mongo.service"/>
 
 </beans>

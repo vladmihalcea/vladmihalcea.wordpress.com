@@ -10,6 +10,6 @@
     <aop:aspectj-autoproxy />
 
     <bean id="optimisticConcurrencyControlAspect"
-          class="vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
+          class="org.vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
 
 </beans>

@@ -8,7 +8,7 @@
         </layout>
     </appender>
     
-    <logger name="vladmihalcea">
+    <logger name="org.vladmihalcea">
         <level value="debug"/>
     </logger>
 

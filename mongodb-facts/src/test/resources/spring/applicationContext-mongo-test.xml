@@ -41,9 +41,9 @@
     </bean>
 
     <mongo:mapping-converter id="mappingConverter">
-        <mongo:custom-converters base-package="vladmihalcea.**.mongo.converter" />
+        <mongo:custom-converters base-package="org.vladmihalcea.**.mongo.converter" />
     </mongo:mapping-converter>
 
-    <mongo:repositories base-package="vladmihalcea.mongo.dao"/>
+    <mongo:repositories base-package="org.vladmihalcea.mongo.dao"/>
 
 </beans>

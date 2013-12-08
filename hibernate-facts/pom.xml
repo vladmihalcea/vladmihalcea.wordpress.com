@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.wordpress.vladmihalcea</groupId>
+    <groupId>org.vladmihalcea</groupId>
     <artifactId>hibernate-facts</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -107,7 +107,13 @@
         </dependency>
 
         <dependency>
-            <groupId>com.wordpress.vladmihalcea</groupId>
+            <groupId>net.ttddyy</groupId>
+            <artifactId>datasource-proxy</artifactId>
+            <version>${datasource-proxy.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.vladmihalcea</groupId>
             <artifactId>concurrency-util</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -159,7 +165,7 @@
                                 <mkdir dir="${project.build.directory}/test-classes/hsqldb"/>
                                 <hibernatetool destdir="${project.build.directory}/test-classes/hsqldb">
                                     <classpath refid="hibernate_tools_path"/>
-                                    <jpaconfiguration persistenceunit="testPersistenceUnit"
+                                    <jpaconfiguration persistenceunit="persistenceUnit"
                                                       propertyfile="src/test/resources/META-INF/spring/jdbc.properties"/>
                                     <hbm2ddl drop="false" create="true" export="false"
                                              outputfilename="create_db.sql"
@@ -281,7 +287,7 @@
                         </database>
                         <generate></generate>
                         <target>
-                            <packageName>vladmihalcea.jooq.schema</packageName>
+                            <packageName>org.vladmihalcea.jooq.schema</packageName>
                             <directory>${project.build.directory}/generated-sources/java</directory>
                         </target>
                     </generator>
@@ -323,7 +329,7 @@
                     </docletArtifact>
                     <additionalparam>
                         -inferrel -inferdep -inferdepinpackage -quiet -hide java.*
-                        -collpackages vladmihalcea.* -qualify
+                        -collpackages org.vladmihalcea.* -qualify
                         -postfixpackage -all
                         -nodefontsize 9 -nodefontpackagesize 7
                     </additionalparam>
@@ -345,6 +351,7 @@
         <commons.lang.version>2.5</commons.lang.version>
         <jooq.version>3.2.0</jooq.version>
         <btm.version>2.1.1</btm.version>
+        <datasource-proxy.version>1.2</datasource-proxy.version>
     </properties>
 
 </project>

@@ -13,7 +13,7 @@
 
     <context:annotation-config/>
 
-    <context:component-scan base-package="vladmihalcea" />
+    <context:component-scan base-package="org.vladmihalcea" />
 
     <context:property-placeholder location="/META-INF/spring/jdbc.properties"/>
 
@@ -25,7 +25,7 @@
         <property name="journal" value="${btm.config.journal:disk}"/>
     </bean>
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+    <bean id="xaDataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
         <constructor-arg>
             <bean class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
                   destroy-method="close">
@@ -59,7 +59,7 @@
     <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
 
     <bean id="testEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="testPersistenceUnit"/>
+        <property name="persistenceUnitName" value="persistenceUnit"/>
         <property name="persistenceUnitManager" ref="persistenceUnitManager"/>
         <property name="jpaDialect" ref="jpaDialect"/>
     </bean>
@@ -82,9 +82,9 @@
     <aop:aspectj-autoproxy />
 
     <bean id="optimisticConcurrencyControlAspect"
-          class="vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
+          class="org.vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
 
-    <bean id="databaseScriptLifecycleHandler" class="vladmihalcea.util.DatabaseScriptLifecycleHandler"
+    <bean id="databaseScriptLifecycleHandler" class="org.vladmihalcea.util.DatabaseScriptLifecycleHandler"
           depends-on="transactionManager">
         <constructor-arg name="dataSource" ref="dataSource"/>
         <constructor-arg name="initScripts">
@@ -107,5 +107,23 @@
         <constructor-arg ref="dataSource"/>
         <constructor-arg value="#{T(org.jooq.SQLDialect).HSQLDB}"/>
     </bean>
+
+    <bean id="dataSource" class="net.ttddyy.dsproxy.support.ProxyDataSource">
+        <property name="dataSource" ref="xaDataSource"/>
+        <property name="listener">
+            <bean class="net.ttddyy.dsproxy.listener.ChainListener">
+                <property name="listeners">
+                    <list>
+                        <bean class="net.ttddyy.dsproxy.listener.CommonsQueryLoggingListener">
+                            <property name="logLevel" value="INFO"/>
+                        </bean>
+                        <bean class="net.ttddyy.dsproxy.listener.DataSourceQueryCountListener"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+
 
 </beans>
