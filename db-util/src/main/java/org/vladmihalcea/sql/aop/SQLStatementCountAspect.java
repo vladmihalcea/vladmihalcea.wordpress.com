@@ -16,24 +16,19 @@
 
 package org.vladmihalcea.sql.aop;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import net.ttddyy.dsproxy.QueryCount;
+import net.ttddyy.dsproxy.QueryCountHolder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.transaction.IllegalTransactionStateException;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
-import org.vladmihalcea.concurrent.Retry;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
+import org.vladmihalcea.sql.SQLStatementCount;
+import org.vladmihalcea.util.ReflectionUtils;
 
 /**
- * OptimisticConcurrencyControlAspect - Aspect to retry optimistic locking attempts.
+ * SQLStatementCountAspect - Aspect to check executed SQL statements.
  *
  * @author Vlad Mihalcea
  */
@@ -44,66 +39,33 @@ public class SQLStatementCountAspect {
 
     @Around("@annotation(org.vladmihalcea.sql.SQLStatementCount)")
     public Object count(ProceedingJoinPoint pjp) throws Throwable {
-        Retry countAnnotation = getRetryAnnotation(pjp);
-        return (countAnnotation != null) ? proceed(pjp, countAnnotation) : proceed(pjp);
+        SQLStatementCount countAnnotation = ReflectionUtils.getAnnotation(pjp, SQLStatementCount.class);
+        return (countAnnotation != null) ? proceed(pjp, countAnnotation) : pjp.proceed();
     }
 
-    private Object proceed(ProceedingJoinPoint pjp) throws Throwable {
-        return pjp.proceed();
-    }
-
-    private Object proceed(ProceedingJoinPoint pjp, Retry retryAnnotation) throws Throwable {
-        int times = retryAnnotation.times();
-        Class<? extends Throwable>[] retryOn = retryAnnotation.on();
-        Assert.isTrue(times > 0, "@Retry{times} should be greater than 0!");
-        Assert.isTrue(retryOn.length > 0, "@Retry{on} should have at least one Throwable!");
-        if (retryAnnotation.failInTransaction() && TransactionSynchronizationManager.isActualTransactionActive()) {
-            throw new IllegalTransactionStateException(
-                    "You shouldn't retry an operation from withing an existing Transaction." +
-                    "This is because we can't retry if the current Transaction was already rollbacked!");
-        }
-        LOGGER.info("Proceed with {} retries on {}", times, Arrays.toString(retryOn));
-        return tryProceeding(pjp, times, retryOn);
-    }
-
-    private Object tryProceeding(ProceedingJoinPoint pjp, int times, Class<? extends Throwable>[] retryOn) throws Throwable {
+    private Object proceed(ProceedingJoinPoint pjp, SQLStatementCount countAnnotation) throws Throwable {
+        int select = countAnnotation.select();
+        int insert = countAnnotation.insert();
+        int update = countAnnotation.update();
+        int delete = countAnnotation.delete();
+        Assert.isTrue(select >= 0, "@SQLStatementCount{select} should be greater or equal to 0!");
+        Assert.isTrue(insert >= 0, "@SQLStatementCount{insert} should be greater or equal to 0!");
+        Assert.isTrue(update >= 0, "@SQLStatementCount{update} should be greater or equal to 0!");
+        Assert.isTrue(delete >= 0, "@SQLStatementCount{delete} should be greater or equal to 0!");
+        Object result;
         try {
-            return proceed(pjp);
-        } catch (Throwable throwable) {
-            if (isRetryThrowable(throwable, retryOn) && times-- > 0) {
-                LOGGER.info("Optimistic locking detected, {} remaining retries on {}", times, Arrays.toString(retryOn));
-                return tryProceeding(pjp, times, retryOn);
+            if(!QueryCountHolder.getDataSourceNames().isEmpty()) {
+                throw new IllegalArgumentException("QueryCountHolder shouldn't have been activated!");
             }
-            throw throwable;
+            result = pjp.proceed();
+        } finally {
+            QueryCount queryCount = QueryCountHolder.getGrandTotal();
+            Assert.isTrue(select == queryCount.getSelect(), "Expected " + select + " selects but recorded " + queryCount.getSelect() + " instead!");
+            Assert.isTrue(insert == queryCount.getInsert(), "Expected " + insert + " inserts but recorded " + queryCount.getInsert() + " instead!");
+            Assert.isTrue(update == queryCount.getUpdate(), "Expected " + update + " updates but recorded " + queryCount.getUpdate() + " instead!");
+            Assert.isTrue(delete == queryCount.getDelete(), "Expected " + delete + " deletes but recorded " + queryCount.getSelect() + " instead!");
+            QueryCountHolder.clear();
         }
-    }
-
-    private boolean isRetryThrowable(Throwable throwable, Class<? extends Throwable>[] retryOn) {
-        Throwable[] causes = ExceptionUtils.getThrowables(throwable);
-        for (Throwable cause : causes) {
-            for (Class<? extends Throwable> retryThrowable : retryOn) {
-                if (retryThrowable.isAssignableFrom(cause.getClass())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private Retry getRetryAnnotation(ProceedingJoinPoint pjp) throws NoSuchMethodException {
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        Method method = signature.getMethod();
-        Retry retryAnnotation = AnnotationUtils.findAnnotation(method, Retry.class);
-
-        if (retryAnnotation != null) {
-            return retryAnnotation;
-        }
-
-        Class[] argClasses = new Class[pjp.getArgs().length];
-        for (int i = 0; i < pjp.getArgs().length; i++) {
-            argClasses[i] = pjp.getArgs()[i].getClass();
-        }
-        method = pjp.getTarget().getClass().getMethod(pjp.getSignature().getName(), argClasses);
-        return AnnotationUtils.findAnnotation(method, Retry.class);
+        return result;
     }
 }

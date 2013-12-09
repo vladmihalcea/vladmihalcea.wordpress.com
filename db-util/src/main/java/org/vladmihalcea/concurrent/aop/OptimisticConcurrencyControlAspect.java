@@ -20,16 +20,14 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.transaction.IllegalTransactionStateException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 import org.vladmihalcea.concurrent.Retry;
+import org.vladmihalcea.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
@@ -44,7 +42,7 @@ public class OptimisticConcurrencyControlAspect {
 
     @Around("@annotation(org.vladmihalcea.concurrent.Retry)")
     public Object retry(ProceedingJoinPoint pjp) throws Throwable {
-        Retry retryAnnotation = getRetryAnnotation(pjp);
+        Retry retryAnnotation = ReflectionUtils.getAnnotation(pjp, Retry.class);
         return (retryAnnotation != null) ? proceed(pjp, retryAnnotation) : proceed(pjp);
     }
 
@@ -88,22 +86,5 @@ public class OptimisticConcurrencyControlAspect {
             }
         }
         return false;
-    }
-
-    private Retry getRetryAnnotation(ProceedingJoinPoint pjp) throws NoSuchMethodException {
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        Method method = signature.getMethod();
-        Retry retryAnnotation = AnnotationUtils.findAnnotation(method, Retry.class);
-
-        if (retryAnnotation != null) {
-            return retryAnnotation;
-        }
-
-        Class[] argClasses = new Class[pjp.getArgs().length];
-        for (int i = 0; i < pjp.getArgs().length; i++) {
-            argClasses[i] = pjp.getArgs()[i].getClass();
-        }
-        method = pjp.getTarget().getClass().getMethod(pjp.getSignature().getName(), argClasses);
-        return AnnotationUtils.findAnnotation(method, Retry.class);
     }
 }
