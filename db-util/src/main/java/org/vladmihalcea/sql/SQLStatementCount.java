@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package org.vladmihalcea.service;
+package org.vladmihalcea.sql;
 
-import org.vladmihalcea.hibernate.model.store.Product;
+import java.lang.annotation.*;
 
 /**
- * ProductService - Product Service
+ * SQLStatementCount - Counts SQL Statements executed in the current Thread
  *
  * @author Vlad Mihalcea
  */
-public interface ProductService {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Inherited
+public @interface SQLStatementCount {
 
-    Product newProduct();
-
-    Product updateName(Long id, String name);
+    int select() default 0;
+    int insert() default 0;
+    int update() default 0;
+    int delete() default 0;
 }

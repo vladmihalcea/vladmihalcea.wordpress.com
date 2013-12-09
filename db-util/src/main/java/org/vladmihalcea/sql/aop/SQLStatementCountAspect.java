@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.vladmihalcea.concurrent.aop;
+package org.vladmihalcea.sql.aop;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -38,14 +38,14 @@ import java.util.Arrays;
  * @author Vlad Mihalcea
  */
 @Aspect
-public class OptimisticConcurrencyControlAspect {
+public class SQLStatementCountAspect {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OptimisticConcurrencyControlAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SQLStatementCountAspect.class);
 
-    @Around("@annotation(org.vladmihalcea.concurrent.Retry)")
-    public Object retry(ProceedingJoinPoint pjp) throws Throwable {
-        Retry retryAnnotation = getRetryAnnotation(pjp);
-        return (retryAnnotation != null) ? proceed(pjp, retryAnnotation) : proceed(pjp);
+    @Around("@annotation(org.vladmihalcea.sql.SQLStatementCount)")
+    public Object count(ProceedingJoinPoint pjp) throws Throwable {
+        Retry countAnnotation = getRetryAnnotation(pjp);
+        return (countAnnotation != null) ? proceed(pjp, countAnnotation) : proceed(pjp);
     }
 
     private Object proceed(ProceedingJoinPoint pjp) throws Throwable {

@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package org.vladmihalcea.service;
-
-import org.vladmihalcea.hibernate.model.store.Product;
+package org.vladmihalcea.util;
 
 /**
- * ProductService - Product Service
+ * ReflectionUtils - ReflectionUtils
  *
  * @author Vlad Mihalcea
  */
-public interface ProductService {
-
-    Product newProduct();
-
-    Product updateName(Long id, String name);
+public class ReflectionUtils {
 }
