@@ -10,9 +10,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.vladmihalcea</groupId>
     <artifactId>hibernate-facts</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>Hibernate Facts</name>
+    <description>Hibernate Facts</description>
 
     <dependencies>
         <dependency>
