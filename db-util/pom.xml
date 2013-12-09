@@ -10,12 +10,11 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.vladmihalcea</groupId>
-    <artifactId>concurrency-util</artifactId>
+    <artifactId>db-util</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Concurrency Util</name>
-    <description>Concurrency Util</description>
+    <name>DB Util</name>
+    <description>DB Util</description>
 
     <dependencies>
 
@@ -41,7 +40,7 @@
         <dependency>
             <groupId>org.logback-extensions</groupId>
             <artifactId>logback-ext-spring</artifactId>
-            <version>0.1.1</version>
+            <version>${logback-ext-spring.version}</version>
         </dependency>
 
         <dependency>
@@ -84,7 +83,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -117,11 +116,13 @@
     <properties>
         <jcl-over-slf4j.version>1.6.1</jcl-over-slf4j.version>
         <logback.version>1.0.13</logback.version>
+        <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
 
         <aspectj.version>1.6.8</aspectj.version>
         <spring.version>3.2.2.RELEASE</spring.version>
         <commons-lang.version>2.5</commons-lang.version>
         <mockito.version>1.8.5</mockito.version>
+        <junit.version>4.8.1</junit.version>
     </properties>
 
 </project>
