@@ -21,10 +21,10 @@ import net.ttddyy.dsproxy.QueryCountHolder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.vladmihalcea.sql.SQLStatementCount;
+import org.vladmihalcea.sql.exception.SQLStatementCountHolderAlreadyInitializedException;
+import org.vladmihalcea.sql.exception.SQLStatementCountMismatchException;
 import org.vladmihalcea.util.ReflectionUtils;
 
 /**
@@ -34,8 +34,6 @@ import org.vladmihalcea.util.ReflectionUtils;
  */
 @Aspect
 public class SQLStatementCountAspect {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SQLStatementCountAspect.class);
 
     @Around("@annotation(org.vladmihalcea.sql.SQLStatementCount)")
     public Object count(ProceedingJoinPoint pjp) throws Throwable {
@@ -55,15 +53,23 @@ public class SQLStatementCountAspect {
         Object result;
         try {
             if(!QueryCountHolder.getDataSourceNames().isEmpty()) {
-                throw new IllegalArgumentException("QueryCountHolder shouldn't have been activated!");
+                throw new SQLStatementCountHolderAlreadyInitializedException("QueryCountHolder shouldn't have been activated!", countAnnotation, QueryCountHolder.getGrandTotal());
             }
             result = pjp.proceed();
-        } finally {
             QueryCount queryCount = QueryCountHolder.getGrandTotal();
-            Assert.isTrue(select == queryCount.getSelect(), "Expected " + select + " selects but recorded " + queryCount.getSelect() + " instead!");
-            Assert.isTrue(insert == queryCount.getInsert(), "Expected " + insert + " inserts but recorded " + queryCount.getInsert() + " instead!");
-            Assert.isTrue(update == queryCount.getUpdate(), "Expected " + update + " updates but recorded " + queryCount.getUpdate() + " instead!");
-            Assert.isTrue(delete == queryCount.getDelete(), "Expected " + delete + " deletes but recorded " + queryCount.getSelect() + " instead!");
+            if(select != queryCount.getSelect()) {
+                throw new SQLStatementCountMismatchException("Expected " + select + " selects but recorded " + queryCount.getSelect() + " instead!", countAnnotation, queryCount);
+            }
+            if(insert != queryCount.getInsert()) {
+                throw new SQLStatementCountMismatchException("Expected " + insert + " inserts but recorded " + queryCount.getInsert() + " instead!", countAnnotation, queryCount);
+            }
+            if(update != queryCount.getUpdate()) {
+                throw new SQLStatementCountMismatchException("Expected " + update + " updates but recorded " + queryCount.getUpdate() + " instead!", countAnnotation, queryCount);
+            }
+            if(delete != queryCount.getDelete()) {
+                throw new SQLStatementCountMismatchException("Expected " + delete + " deletes but recorded " + queryCount.getDelete() + " instead!", countAnnotation, queryCount);
+            }
+        } finally {
             QueryCountHolder.clear();
         }
         return result;
