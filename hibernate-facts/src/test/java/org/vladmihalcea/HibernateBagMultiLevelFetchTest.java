@@ -268,6 +268,7 @@ public class HibernateBagMultiLevelFetchTest {
                 entityManager.createQuery("delete from BagBranch where id > 0").executeUpdate();
                 entityManager.createQuery("delete from BagTree where id > 0").executeUpdate();
                 entityManager.createQuery("delete from BagForest where id > 0").executeUpdate();
+                entityManager.flush();
                 return null;
             }
         });

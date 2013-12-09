@@ -55,7 +55,7 @@ public class HibernateOperationsOrderTest {
 
     @Before
     public void beforeTest() {
-        clean();
+        CleanDbUtil.cleanStore(transactionTemplate, entityManager);
     }
 
     @Test
@@ -150,19 +150,6 @@ public class HibernateOperationsOrderTest {
                 product.setName("tv set");
 
                 entityManager.flush();
-                return null;
-            }
-        });
-    }
-
-    protected void clean() {
-        transactionTemplate.execute(new TransactionCallback<Void>() {
-            @Override
-            public Void doInTransaction(TransactionStatus transactionStatus) {
-                entityManager.createQuery("delete from Version where id > 0").executeUpdate();
-                entityManager.createQuery("delete from Image where id > 0").executeUpdate();
-                entityManager.createQuery("delete from Product where id > 0").executeUpdate();
-                entityManager.createQuery("delete from Company where id > 0").executeUpdate();
                 return null;
             }
         });

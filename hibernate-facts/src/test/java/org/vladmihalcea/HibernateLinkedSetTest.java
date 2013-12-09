@@ -102,6 +102,7 @@ public class HibernateLinkedSetTest {
                 assertTrue(entityManager.createQuery("from LinkedParent").getResultList().isEmpty());
                 LinkedParent parent = new LinkedParent();
                 entityManager.persist(parent);
+                entityManager.flush();
                 return parent.getId();
             }
         });

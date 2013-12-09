@@ -84,6 +84,9 @@
     <bean id="optimisticConcurrencyControlAspect"
           class="org.vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
 
+    <bean id="sqlStatementCountAspect"
+          class="org.vladmihalcea.sql.aop.SQLStatementCountAspect"/>
+
     <bean id="databaseScriptLifecycleHandler" class="org.vladmihalcea.util.DatabaseScriptLifecycleHandler"
           depends-on="transactionManager">
         <constructor-arg name="dataSource" ref="dataSource"/>
@@ -123,7 +126,5 @@
             </bean>
         </property>
     </bean>
-
-
 
 </beans>

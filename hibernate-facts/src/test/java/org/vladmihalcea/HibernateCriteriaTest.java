@@ -57,7 +57,7 @@ public class HibernateCriteriaTest {
 
     @Before
     public void beforeTest() {
-        clean();
+        CleanDbUtil.cleanStore(transactionTemplate, entityManager);
     }
 
     @Test
@@ -300,20 +300,6 @@ public class HibernateCriteriaTest {
                             .and(IMAGE.INDEX.greaterThan(0))
                         .orderBy(IMAGE.NAME.asc())
                         .fetch().into(ImageProductDTO.class);
-            }
-        });
-    }
-
-    protected void clean() {
-        transactionTemplate.execute(new TransactionCallback<Void>() {
-            @Override
-            public Void doInTransaction(TransactionStatus transactionStatus) {
-                entityManager.createQuery("delete from SubVersion where id > 0").executeUpdate();
-                entityManager.createQuery("delete from Version where id > 0").executeUpdate();
-                entityManager.createQuery("delete from Image where id > 0").executeUpdate();
-                entityManager.createQuery("delete from Product where id > 0").executeUpdate();
-                entityManager.createQuery("delete from Company where id > 0").executeUpdate();
-                return null;
             }
         });
     }

@@ -110,6 +110,7 @@ public class HibernateEagerSetTest {
                 assertTrue(entityManager.createQuery("from SetParent").getResultList().isEmpty());
                 SetParent parent = new SetParent();
                 entityManager.persist(parent);
+                entityManager.flush();
                 return parent.getId();
             }
         });

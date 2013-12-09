@@ -195,6 +195,7 @@ public class HibernateListMultiLevelFetchTest {
                 entityManager.createQuery("delete from Branch where id > 0").executeUpdate();
                 entityManager.createQuery("delete from Tree where id > 0").executeUpdate();
                 entityManager.createQuery("delete from Forest where id > 0").executeUpdate();
+                entityManager.flush();
                 return null;
             }
         });

@@ -118,6 +118,7 @@ public class HibernateBagDuplicateTest {
                 assertTrue(entityManager.createQuery("from Parent").getResultList().isEmpty());
                 Parent parent = new Parent();
                 entityManager.persist(parent);
+                entityManager.flush();
                 return parent.getId();
             }
         });
