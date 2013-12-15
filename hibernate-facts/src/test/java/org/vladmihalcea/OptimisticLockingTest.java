@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicationContext.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext-test.xml"})
 public class OptimisticLockingTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OptimisticLockingTest.class);

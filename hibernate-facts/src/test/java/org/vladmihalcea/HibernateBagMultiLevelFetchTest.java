@@ -45,7 +45,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicationContext.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext-test.xml"})
 public class HibernateBagMultiLevelFetchTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HibernateBagMultiLevelFetchTest.class);
