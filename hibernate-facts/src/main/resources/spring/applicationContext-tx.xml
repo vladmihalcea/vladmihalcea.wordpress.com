@@ -72,6 +72,11 @@
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
+    <bean id="jooqContext" class="org.jooq.impl.DSL" factory-method="using">
+        <constructor-arg ref="dataSource"/>
+        <constructor-arg value="${jooq.dialect}"/>
+    </bean>
+
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <aop:aspectj-autoproxy />

@@ -31,9 +31,4 @@
         </constructor-arg>
     </bean>
 
-    <bean id="jooqContext" class="org.jooq.impl.DSL" factory-method="using">
-        <constructor-arg ref="dataSource"/>
-        <constructor-arg value="#{T(org.jooq.SQLDialect).HSQLDB}"/>
-    </bean>
-
 </beans>
