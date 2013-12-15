@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="testDataSource" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
+          destroy-method="close">
+        <property name="className" value="bitronix.tm.resource.jdbc.lrc.LrcXADataSource"/>
+        <property name="uniqueName" value="testDataSource"/>
+        <property name="minPoolSize" value="0"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="allowLocalTransactions" value="false" />
+        <property name="driverProperties">
+            <props>
+                <prop key="user">${jdbc.username}</prop>
+                <prop key="password">${jdbc.password}</prop>
+                <prop key="url">${jdbc.url}</prop>
+                <prop key="driverClassName">${jdbc.driverClassName}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="proxyDataSource" class="net.ttddyy.dsproxy.support.ProxyDataSource">
+        <property name="dataSource" ref="testDataSource"/>
+        <property name="listener">
+            <bean class="net.ttddyy.dsproxy.listener.ChainListener">
+                <property name="listeners">
+                    <list>
+                        <bean class="net.ttddyy.dsproxy.listener.CommonsQueryLoggingListener">
+                            <property name="logLevel" value="INFO"/>
+                        </bean>
+                        <bean class="net.ttddyy.dsproxy.listener.DataSourceQueryCountListener"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <alias name="proxyDataSource" alias="dataSource"/>
+
+</beans>

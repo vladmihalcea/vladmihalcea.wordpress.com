@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <import resource="classpath:spring/applicationContext-datasource.xml" />
+    <import resource="classpath:spring/applicationContext-datasource-test.xml" />
+    <import resource="classpath:spring/applicationContext-tx.xml" />
+
+    <bean id="sqlStatementCountAspect"
+          class="org.vladmihalcea.sql.aop.SQLStatementCountAspect"/>
+
+    <bean id="databaseScriptLifecycleHandler" class="org.vladmihalcea.util.DatabaseScriptLifecycleHandler"
+          depends-on="transactionManager">
+        <constructor-arg name="dataSource" ref="dataSource"/>
+        <constructor-arg name="initScripts">
+            <array>
+                <bean class="org.springframework.core.io.ClassPathResource">
+                    <constructor-arg value="hsqldb/create_db.sql"/>
+                </bean>
+            </array>
+        </constructor-arg>
+        <constructor-arg name="destroyScripts">
+            <array>
+                <bean class="org.springframework.core.io.ClassPathResource">
+                    <constructor-arg value="hsqldb/drop_db.sql"/>
+                </bean>
+            </array>
+        </constructor-arg>
+    </bean>
+
+    <bean id="jooqContext" class="org.jooq.impl.DSL" factory-method="using">
+        <constructor-arg ref="dataSource"/>
+        <constructor-arg value="#{T(org.jooq.SQLDialect).HSQLDB}"/>
+    </bean>
+
+</beans>

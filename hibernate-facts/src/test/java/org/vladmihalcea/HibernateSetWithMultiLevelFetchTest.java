@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext.xml"})
 public class HibernateSetWithMultiLevelFetchTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HibernateSetWithMultiLevelFetchTest.class);

@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.vladmihalcea.jooq.schema.Tables.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicatonContext.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext.xml"})
 public class HibernateCriteriaTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HibernateCriteriaTest.class);

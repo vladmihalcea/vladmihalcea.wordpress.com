@@ -25,25 +25,20 @@
         <property name="journal" value="${btm.config.journal:disk}"/>
     </bean>
 
-    <bean id="xaDataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
-        <constructor-arg>
-            <bean class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
-                  destroy-method="close">
-                <property name="className" value="bitronix.tm.resource.jdbc.lrc.LrcXADataSource"/>
-                <property name="uniqueName" value="testDataSource"/>
-                <property name="minPoolSize" value="0"/>
-                <property name="maxPoolSize" value="5"/>
-                <property name="allowLocalTransactions" value="false" />
-                <property name="driverProperties">
-                    <props>
-                        <prop key="user">${jdbc.username}</prop>
-                        <prop key="password">${jdbc.password}</prop>
-                        <prop key="url">${jdbc.url}</prop>
-                        <prop key="driverClassName">${jdbc.driverClassName}</prop>
-                    </props>
-                </property>
-            </bean>
-        </constructor-arg>
+    <bean id="dataSource" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
+          destroy-method="close">
+        <property name="className" value="${jdbc.driverClassName}"/>
+        <property name="uniqueName" value="dataSource"/>
+        <property name="minPoolSize" value="0"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="allowLocalTransactions" value="false" />
+        <property name="driverProperties">
+            <props>
+                <prop key="user">${jdbc.username}</prop>
+                <prop key="password">${jdbc.password}</prop>
+                <prop key="url">${jdbc.url}</prop>
+            </props>
+        </property>
     </bean>
 
     <bean id="persistenceUnitManager" depends-on="transactionManager"
@@ -58,7 +53,7 @@
     <!-- JpaDialect must be configured for transactionManager to make JPA and JDBC share transactions -->
     <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
 
-    <bean id="testEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="persistenceUnit"/>
         <property name="persistenceUnitManager" ref="persistenceUnitManager"/>
         <property name="jpaDialect" ref="jpaDialect"/>
@@ -83,48 +78,5 @@
 
     <bean id="optimisticConcurrencyControlAspect"
           class="org.vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
-
-    <bean id="sqlStatementCountAspect"
-          class="org.vladmihalcea.sql.aop.SQLStatementCountAspect"/>
-
-    <bean id="databaseScriptLifecycleHandler" class="org.vladmihalcea.util.DatabaseScriptLifecycleHandler"
-          depends-on="transactionManager">
-        <constructor-arg name="dataSource" ref="dataSource"/>
-        <constructor-arg name="initScripts">
-            <array>
-                <bean class="org.springframework.core.io.ClassPathResource">
-                    <constructor-arg value="hsqldb/create_db.sql"/>
-                </bean>
-            </array>
-        </constructor-arg>
-        <constructor-arg name="destroyScripts">
-            <array>
-                <bean class="org.springframework.core.io.ClassPathResource">
-                    <constructor-arg value="hsqldb/drop_db.sql"/>
-                </bean>
-            </array>
-        </constructor-arg>
-    </bean>
-
-    <bean id="jooqContext" class="org.jooq.impl.DSL" factory-method="using">
-        <constructor-arg ref="dataSource"/>
-        <constructor-arg value="#{T(org.jooq.SQLDialect).HSQLDB}"/>
-    </bean>
-
-    <bean id="dataSource" class="net.ttddyy.dsproxy.support.ProxyDataSource">
-        <property name="dataSource" ref="xaDataSource"/>
-        <property name="listener">
-            <bean class="net.ttddyy.dsproxy.listener.ChainListener">
-                <property name="listeners">
-                    <list>
-                        <bean class="net.ttddyy.dsproxy.listener.CommonsQueryLoggingListener">
-                            <property name="logLevel" value="INFO"/>
-                        </bean>
-                        <bean class="net.ttddyy.dsproxy.listener.DataSourceQueryCountListener"/>
-                    </list>
-                </property>
-            </bean>
-        </property>
-    </bean>
 
 </beans>
