@@ -1,6 +1,13 @@
-var start = new Date();
 var fromDate = new Date(2012, 0, 1, 0, 0, 0, 0);
 var toDate = new Date(2013, 0, 1, 0, 0, 0, 0);
+
+fromDate = new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate()));
+toDate = new Date(Date.UTC(toDate.getUTCFullYear(), toDate.getUTCMonth(), toDate.getUTCDate()));
+
+print("Aggregating from " + fromDate + " to " + toDate);
+
+var start = new Date();
+
 var dataSet = db.randomData.aggregate([
 	{
 		$match:{
@@ -15,11 +22,11 @@ var dataSet = db.randomData.aggregate([
 	},
 	{
 		$project:{         
-			hour:{
+			timestamp:{
 				$subtract:[
 				   "$_id", {
 					  $mod:[
-						"$_id", 24 * 60 * 60 * 1000
+						"$_id", 366 * 24 * 60 * 60 * 1000
 					  ]
 				   }
 				]
@@ -30,7 +37,7 @@ var dataSet = db.randomData.aggregate([
 	{
 		$group: {
 			"_id": {
-				"timestamp" : "$hour"
+					"timestamp" : "$timestamp"
 			}, 
 			"count": { 
 				$sum: 1 
@@ -45,11 +52,6 @@ var dataSet = db.randomData.aggregate([
 				$max: "$v" 
 			}		
 		}
-	},
-	{
-		$sort: {
-			"_id.timestamp" : 1
-		} 	
 	}
 ]);
 if(dataSet.result != null && dataSet.result.length > 0) {

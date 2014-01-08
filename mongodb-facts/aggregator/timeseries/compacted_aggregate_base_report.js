@@ -1,12 +1,10 @@
 var minDate = new Date(Date.UTC(2012, 0, 1, 0, 0, 0, 0));
 var maxDate = new Date(Date.UTC(2013, 0, 1, 0, 0, 0, 0));
 
-var MillisSpan = {
-	second : 1000,
-	minute : 60 * 1000,
-	hour : 60 * 60 * 1000,
-	day : 24 * 60 * 60 * 1000
-};
+var ONE_SECOND_MILLIS = 1000;
+var ONE_MINUTE_MILLIS = 60 * ONE_SECOND_MILLIS;
+var ONE_HOUR_MILLIS = 60 * ONE_MINUTE_MILLIS;
+var ONE_DAY_MILLIS = 24 * ONE_HOUR_MILLIS;
 
 function aggregateData(span) {
 	var delta = maxDate.getTime() - minDate.getTime();
@@ -14,9 +12,9 @@ function aggregateData(span) {
 	var fromDate = new Date(minDate.getTime() + Math.random() * delta);
 
 	if(span == MillisSpan.minute) {
-		fromDate.setSeconds(0, 0);
+		fromDate = new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate(), fromDate.getUTCHours(), fromDate.getUTCMinutes()));
 	} else if(span == MillisSpan.hour) {
-		fromDate.setMinutes(0, 0, 0);
+		fromDate = new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate(), fromDate.getUTCHours()));
 	} else if(span == MillisSpan.day) {
 		fromDate = new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate()));
 	}	
@@ -27,7 +25,7 @@ function aggregateData(span) {
 
 	var start = new Date();
 
-	var dataSet = db.randomData.aggregate([
+	var pipeline = [
 		{
 			$match:{
 				"_id":{
@@ -71,13 +69,10 @@ function aggregateData(span) {
 					$max: "$v" 
 				}		
 			}
-		},
-		{
-			$sort: {
-				"_id.timestamp" : 1
-			} 	
 		}
-	]);	
+	];
+	
+	var dataSet = db.randomData.aggregate(pipeline);	 
 	print("Aggregation took:" + (new Date().getTime() - start.getTime())/1000 + "s");	
 	if(dataSet.result != null && dataSet.result.length > 0) {
 		print("Fetching :" + dataSet.result.length + " documents.");
@@ -85,5 +80,5 @@ function aggregateData(span) {
 			printjson(document);
 		});
 	}
-	print("Fetch took:" + (new Date().getTime() - start.getTime())/1000 + "s");
+	print("Aggregation and fetch took:" + (new Date().getTime() - start.getTime())/1000 + "s");
 }

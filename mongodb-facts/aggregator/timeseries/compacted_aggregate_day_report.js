@@ -1,2 +1,2 @@
-load(pwd() + "/base_compacted_aggregate_report.js");
-aggregateData(MillisSpan.day);
+load(pwd() + "/compacted_aggregate_base_report.js");
+aggregateData(ONE_DAY_MILLIS);
