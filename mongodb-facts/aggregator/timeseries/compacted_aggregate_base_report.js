@@ -1,25 +1,4 @@
-var minDate = new Date(Date.UTC(2012, 0, 1, 0, 0, 0, 0));
-var maxDate = new Date(Date.UTC(2013, 0, 1, 0, 0, 0, 0));
-
-var ONE_SECOND_MILLIS = 1000;
-var ONE_MINUTE_MILLIS = 60 * ONE_SECOND_MILLIS;
-var ONE_HOUR_MILLIS = 60 * ONE_MINUTE_MILLIS;
-var ONE_DAY_MILLIS = 24 * ONE_HOUR_MILLIS;
-
-function aggregateData(span) {
-	var delta = maxDate.getTime() - minDate.getTime();
-	
-	var fromDate = new Date(minDate.getTime() + Math.random() * delta);
-
-	if(span == MillisSpan.minute) {
-		fromDate = new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate(), fromDate.getUTCHours(), fromDate.getUTCMinutes()));
-	} else if(span == MillisSpan.hour) {
-		fromDate = new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate(), fromDate.getUTCHours()));
-	} else if(span == MillisSpan.day) {
-		fromDate = new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate()));
-	}	
-	
-	var toDate = new Date(fromDate.getTime() + span);
+function aggregateData(fromDate, toDate, deltaMillis) {		
 
 	print("Aggregating from " + fromDate + " to " + toDate);
 
@@ -43,7 +22,7 @@ function aggregateData(span) {
 					$subtract:[
 					   "$_id", {
 						  $mod:[
-							"$_id", span
+							"$_id", deltaMillis
 						  ]
 					   }
 					]
@@ -80,5 +59,7 @@ function aggregateData(span) {
 			printjson(document);
 		});
 	}
-	print("Aggregation and fetch took:" + (new Date().getTime() - start.getTime())/1000 + "s");
+	var duration = (new Date().getTime() - start.getTime())/1000;
+	print("Aggregation and fetch took:" + duration + "s");
+	return duration;
 }
