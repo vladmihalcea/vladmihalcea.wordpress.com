@@ -1,9 +1,17 @@
-function aggregateData(fromDate, toDate, deltaMillis) {		
+var enablePrintResult = false;
+
+function printResult(dataSet) {
+	dataSet.result.forEach(function(document)  {
+		printjson(document);
+	});
+}
+
+function aggregateData(fromDate, toDate, groupDeltaMillis) {		
 
 	print("Aggregating from " + fromDate + " to " + toDate);
 
 	var start = new Date();
-
+	
 	var pipeline = [
 		{
 			$match:{
@@ -22,7 +30,7 @@ function aggregateData(fromDate, toDate, deltaMillis) {
 					$subtract:[
 					   "$_id", {
 						  $mod:[
-							"$_id", deltaMillis
+							"$_id", groupDeltaMillis
 						  ]
 					   }
 					]
@@ -48,18 +56,29 @@ function aggregateData(fromDate, toDate, deltaMillis) {
 					$max: "$v" 
 				}		
 			}
+		},
+		{
+			$sort: {
+				"_id.timestamp" : 1		
+			}
 		}
 	];
 	
-	var dataSet = db.randomData.aggregate(pipeline);	 
-	print("Aggregation took:" + (new Date().getTime() - start.getTime())/1000 + "s");	
+	var dataSet = db.randomData.aggregate(pipeline);
+	var aggregationDuration = (new Date().getTime() - start.getTime())/1000;	
+	print("Aggregation took:" + aggregationDuration + "s");	
 	if(dataSet.result != null && dataSet.result.length > 0) {
-		print("Fetching :" + dataSet.result.length + " documents.");
-		dataSet.result.forEach(function(document)  {
-			printjson(document);
-		});
+		print("Fetched :" + dataSet.result.length + " documents.");
+		if(enablePrintResult) {
+			printResult(dataSet);
+		}
 	}
-	var duration = (new Date().getTime() - start.getTime())/1000;
-	print("Aggregation and fetch took:" + duration + "s");
-	return duration;
+	var aggregationAndFetchDuration = (new Date().getTime() - start.getTime())/1000;
+	if(enablePrintResult) {
+		print("Aggregation and fetch took:" + aggregationAndFetchDuration + "s");
+	}	
+	return {
+		aggregationDuration : aggregationDuration,
+		aggregationAndFetchDuration : aggregationAndFetchDuration
+	};
 }
