@@ -22,7 +22,7 @@ function aggregateData(fromDate, toDate, groupDeltaMillis) {
 			}
 		},
 		{
-			$unwind:"$v"
+			$unwind:"$values"
 		},
 		{
 			$project:{         
@@ -35,7 +35,7 @@ function aggregateData(fromDate, toDate, groupDeltaMillis) {
 					   }
 					]
 				},
-				v:1
+				value : "$values"
 			}
 		},
 		{
@@ -47,13 +47,13 @@ function aggregateData(fromDate, toDate, groupDeltaMillis) {
 					$sum: 1 
 				}, 
 				"avg": { 
-					$avg: "$v" 
+					$avg: "$value" 
 				}, 
 				"min": { 
-					$min: "$v" 
+					$min: "$value" 
 				}, 
 				"max": { 
-					$max: "$v" 
+					$max: "$value" 
 				}		
 			}
 		},

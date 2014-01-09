@@ -54,6 +54,13 @@ function aggregateData(fromDate, toDate, groupDeltaMillis) {
 			}
 		},
 		{
+			$project: {
+				_id : 0,
+				created_on : 1,
+				value : 1
+			}
+		},
+		{
 			$group: {
 					"_id": groupBy, 
 					"count": { 

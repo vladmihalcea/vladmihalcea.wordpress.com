@@ -15,7 +15,7 @@ var index = 0;
 while(index < documentNumber) {
 	var date = new Date(minDate.getTime() + Math.random() * delta);
 	var value = Math.random();	
-	db.randomData.update( { _id: date.getTime() }, { $push: { v: value } }, true );	
+	db.randomData.update( { _id: date.getTime() }, { $push: { values: value } }, true );	
 	index++;
 	if(index % 100000 == 0) {	
 		print(job_name + ' inserted ' + index + ' documents.');
