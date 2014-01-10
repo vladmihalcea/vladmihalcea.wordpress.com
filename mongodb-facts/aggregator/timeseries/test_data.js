@@ -6,14 +6,14 @@ var testFromDates = [
 	new Date(Date.UTC(2012, 11, 12, 14, 59, 13))
 ];
 
-function testFromDatesAggregation(matchDeltaMillis, groupDeltaMillis, type) {
+function testFromDatesAggregation(matchDeltaMillis, groupDeltaMillis, type, enablePrintResult) {
 	var aggregationTotalDuration = 0;
 	var aggregationAndFetchTotalDuration = 0;
 	testFromDates.forEach(function(testFromDate) {	
 		var timeInterval = calibrateTimeInterval(testFromDate, matchDeltaMillis);
 		var fromDate = timeInterval.fromDate;
 		var toDate = timeInterval.toDate;
-		var duration = aggregateData(fromDate, toDate, groupDeltaMillis);
+		var duration = aggregateData(fromDate, toDate, groupDeltaMillis, enablePrintResult);
 		aggregationTotalDuration += duration.aggregationDuration;
 		aggregationAndFetchTotalDuration += duration.aggregationAndFetchDuration;		
 	});

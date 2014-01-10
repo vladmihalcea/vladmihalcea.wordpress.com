@@ -1,12 +1,10 @@
-var enablePrintResult = false;
-
 function printResult(dataSet) {
 	dataSet.result.forEach(function(document)  {
 		printjson(document);
 	});
 }
 
-function aggregateData(fromDate, toDate, groupDeltaMillis) {		
+function aggregateData(fromDate, toDate, groupDeltaMillis, enablePrintResult) {		
 
 	print("Aggregating from " + fromDate + " to " + toDate);
 
@@ -26,22 +24,36 @@ function aggregateData(fromDate, toDate, groupDeltaMillis) {
 			"_id.dayOfYear" : 1
 	}; 	
 	
+	var appendSeconds = false;
+	var appendMinutes = false;
+	var appendHours = false;
+	
 	switch(groupDeltaMillis) {
 		case ONE_SECOND_MILLIS :
-			groupBy["second"] = {
-				$second : "$created_on"	
-			};
-			sortBy["_id.second"] = 1;
+			appendSeconds = true;			
 		case ONE_MINUTE_MILLIS :
-			groupBy["minute"] = {
-				$minute : "$created_on"	
-			};
-			sortBy["_id.minute"] = 1;
+			appendMinutes = true;			
 		case ONE_HOUR_MILLIS :
-			groupBy["hour"] = {
-				$hour : "$created_on"	
-			};
-			sortBy["_id.hour"] = 1;		
+			appendHours = true;		
+	}	
+		
+	if(appendHours) {
+		groupBy["hour"] = {
+			$hour : "$created_on"	
+		};
+		sortBy["_id.hour"] = 1;	
+	}
+	if(appendMinutes) {
+		groupBy["minute"] = {
+			$minute : "$created_on"	
+		};
+		sortBy["_id.minute"] = 1;
+	}
+	if(appendSeconds) {
+		groupBy["second"] = {
+			$second : "$created_on"	
+		};
+		sortBy["_id.second"] = 1;
 	}	
 	
 	var pipeline = [
