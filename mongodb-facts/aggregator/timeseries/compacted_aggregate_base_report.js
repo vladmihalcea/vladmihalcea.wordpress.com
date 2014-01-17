@@ -1,12 +1,10 @@
-var enablePrintResult = false;
-
 function printResult(dataSet) {
 	dataSet.result.forEach(function(document)  {
 		printjson(document);
 	});
 }
 
-function aggregateData(fromDate, toDate, groupDeltaMillis) {		
+function aggregateData(fromDate, toDate, groupDeltaMillis, enablePrintResult) {		
 
 	print("Aggregating from " + fromDate + " to " + toDate);
 
