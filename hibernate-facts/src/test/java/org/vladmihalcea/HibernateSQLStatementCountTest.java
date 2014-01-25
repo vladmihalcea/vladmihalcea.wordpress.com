@@ -106,14 +106,12 @@ public class HibernateSQLStatementCountTest {
             assertEquals(3, e.getRecorded());
         }
 
-        QueryCountHolder.clear();
+        SQLStatementCountValidator.reset();
         warehouseProductInfoService.findAllWithFetch();
-        //sqlStatementCountValidator.flush();
         assertSelectCount(1);
 
-        QueryCountHolder.clear();
+        SQLStatementCountValidator.reset();
         warehouseProductInfoService.newWarehouseProductInfo();
-        //sqlStatementCountValidator.flush();
         assertSelectCount(1);
         assertInsertCount(2);
     }
