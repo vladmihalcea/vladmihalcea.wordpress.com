@@ -21,7 +21,6 @@ import net.ttddyy.dsproxy.QueryCountHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.vladmihalcea.sql.SQLStatementCount;
 import org.vladmihalcea.sql.service.CustomerService;
 
 /**
@@ -35,7 +34,6 @@ public class CustomerServiceImpl implements CustomerService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     @Override
-    @SQLStatementCount(select = 5, insert = 4, update = 3, delete = 2)
     public void saveCustomerSuccess() {
         QueryCount queryCount = new QueryCount();
         queryCount.setSelect(5);
@@ -47,7 +45,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @SQLStatementCount(select = 2)
     public void saveCustomerSelectFailure() {
         QueryCount queryCount = new QueryCount();
         queryCount.setSelect(3);
@@ -56,7 +53,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @SQLStatementCount(insert = 2)
     public void saveCustomerInsertFailure() {
         QueryCount queryCount = new QueryCount();
         queryCount.setInsert(3);
@@ -65,7 +61,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @SQLStatementCount(update = 2)
     public void saveCustomerUpdateFailure() {
         QueryCount queryCount = new QueryCount();
         queryCount.setUpdate(3);
@@ -74,7 +69,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @SQLStatementCount(delete = 2)
     public void saveCustomerDeleteFailure() {
         QueryCount queryCount = new QueryCount();
         queryCount.setDelete(3);

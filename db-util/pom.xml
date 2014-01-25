@@ -107,6 +107,12 @@
             <version>${datasource-proxy.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -127,6 +133,7 @@
         <spring.version>3.2.2.RELEASE</spring.version>
         <commons-lang.version>2.5</commons-lang.version>
         <datasource-proxy.version>1.2</datasource-proxy.version>
+        <hibernate.version>4.2.6.Final</hibernate.version>
 
         <mockito.version>1.8.5</mockito.version>
         <junit.version>4.8.1</junit.version>

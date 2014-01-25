@@ -42,9 +42,6 @@
 
     <alias name="proxyDataSource" alias="dataSource"/>
 
-    <bean id="sqlStatementCountAspect"
-          class="org.vladmihalcea.sql.aop.SQLStatementCountAspect"/>
-
     <bean id="databaseScriptLifecycleHandler" class="org.vladmihalcea.util.DatabaseScriptLifecycleHandler"
           depends-on="transactionManager">
         <constructor-arg name="dataSource" ref="dataSource"/>

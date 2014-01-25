@@ -17,7 +17,6 @@
 package org.vladmihalcea;
 
 import net.ttddyy.dsproxy.QueryCountHolder;
-import org.hibernate.LazyInitializationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,16 +28,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.vladmihalcea.hibernate.model.store.*;
+import org.vladmihalcea.hibernate.model.store.Company;
+import org.vladmihalcea.hibernate.model.store.Product;
+import org.vladmihalcea.hibernate.model.store.WarehouseProductInfo;
 import org.vladmihalcea.service.WarehouseProductInfoService;
+import org.vladmihalcea.sql.SQLStatementCountValidator;
+import org.vladmihalcea.sql.exception.SQLSelectCountMismatchException;
 import org.vladmihalcea.sql.exception.SQLStatementCountMismatchException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static junit.framework.Assert.assertEquals;
+import static org.vladmihalcea.sql.SQLStatementCountValidator.assertInsertCount;
+import static org.vladmihalcea.sql.SQLStatementCountValidator.assertSelectCount;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring/applicationContext-test.xml"})
@@ -58,6 +61,7 @@ public class HibernateSQLStatementCountTest {
     @Before
     public void beforeTest() {
         CleanDbUtil.cleanStore(transactionTemplate, entityManager);
+        SQLStatementCountValidator.reset();
     }
 
     @Test
@@ -95,16 +99,22 @@ public class HibernateSQLStatementCountTest {
         });
 
         try {
-            QueryCountHolder.clear();
+            SQLStatementCountValidator.reset();
             warehouseProductInfoService.findAllWithNPlusOne();
-        } catch (SQLStatementCountMismatchException expected) {
-            assertEquals(3, expected.getQueryCount().getSelect());
+            assertSelectCount(1);
+        } catch (SQLSelectCountMismatchException e) {
+            assertEquals(3, e.getRecorded());
         }
 
         QueryCountHolder.clear();
         warehouseProductInfoService.findAllWithFetch();
+        //sqlStatementCountValidator.flush();
+        assertSelectCount(1);
 
         QueryCountHolder.clear();
         warehouseProductInfoService.newWarehouseProductInfo();
+        //sqlStatementCountValidator.flush();
+        assertSelectCount(1);
+        assertInsertCount(2);
     }
 }

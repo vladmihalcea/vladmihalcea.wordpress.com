@@ -24,7 +24,6 @@ import org.vladmihalcea.hibernate.model.store.Company;
 import org.vladmihalcea.hibernate.model.store.Product;
 import org.vladmihalcea.hibernate.model.store.WarehouseProductInfo;
 import org.vladmihalcea.service.WarehouseProductInfoService;
-import org.vladmihalcea.sql.SQLStatementCount;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -45,7 +44,6 @@ public class WarehouseProductInfoServiceImpl implements WarehouseProductInfoServ
 
     @Override
     @Transactional
-    @SQLStatementCount(select = 1, insert = 2)
     public WarehouseProductInfo newWarehouseProductInfo() {
 
         LOGGER.info("newWarehouseProductInfo");
@@ -66,7 +64,6 @@ public class WarehouseProductInfoServiceImpl implements WarehouseProductInfoServ
 
     @Override
     @Transactional
-    @SQLStatementCount(select = 1)
     public List<WarehouseProductInfo> findAllWithNPlusOne() {
         List<WarehouseProductInfo> warehouseProductInfos = entityManager.createQuery(
                 "from WarehouseProductInfo", WarehouseProductInfo.class).getResultList();
@@ -76,7 +73,6 @@ public class WarehouseProductInfoServiceImpl implements WarehouseProductInfoServ
 
     @Override
     @Transactional
-    @SQLStatementCount(select = 1)
     public List<WarehouseProductInfo> findAllWithFetch() {
         List<WarehouseProductInfo> warehouseProductInfos = entityManager.createQuery(
                 "from WarehouseProductInfo wpi " +
