@@ -114,15 +114,9 @@
         </dependency>
 
         <dependency>
-            <groupId>net.ttddyy</groupId>
-            <artifactId>datasource-proxy</artifactId>
-            <version>${datasource-proxy.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.vladmihalcea</groupId>
             <artifactId>db-util</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${db-util.version}</version>
         </dependency>
 
     </dependencies>
@@ -358,7 +352,7 @@
         <commons.lang.version>2.5</commons.lang.version>
         <jooq.version>3.2.0</jooq.version>
         <btm.version>2.1.1</btm.version>
-        <datasource-proxy.version>1.2</datasource-proxy.version>
+        <db-util.version>0.0.1-SNAPSHOT</db-util.version>
     </properties>
 
 </project>

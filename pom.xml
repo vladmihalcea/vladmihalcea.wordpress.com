@@ -12,7 +12,6 @@
     <description>Parent Module</description>
 
     <modules>
-        <module>db-util</module>
         <module>customer-lock</module>
         <module>hibernate-facts</module>
         <module>mongodb-facts</module>
