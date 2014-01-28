@@ -11,7 +11,8 @@
           http://www.springframework.org/schema/util/spring-util-3.0.xsd
         ">
 
-    <bean id="mongoPropertiesPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="mongoPropertiesPlaceholderConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="propertiesArray">
             <array>
                 <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -25,7 +26,7 @@
         </property>
     </bean>
 
-    <mongo:mongo id="mongo" host="${mongo.host}" port="${mongo.port}" />
+    <mongo:mongo id="mongo" host="${mongo.host}" port="${mongo.port}"/>
 
     <mongo:db-factory id="mongoDbFactory" mongo-ref="mongo" dbname="${mongo.dbname}"/>
 
@@ -41,9 +42,9 @@
     </bean>
 
     <mongo:mapping-converter id="mappingConverter">
-        <mongo:custom-converters base-package="org.vladmihalcea.**.mongo.converter" />
+        <mongo:custom-converters base-package="com.vladmihalcea.**.mongo.converter"/>
     </mongo:mapping-converter>
 
-    <mongo:repositories base-package="org.vladmihalcea.mongo.dao"/>
+    <mongo:repositories base-package="com.vladmihalcea.mongo.dao"/>
 
 </beans>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xmlns:context="http://www.springframework.org/schema/context"
-           xmlns:tx="http://www.springframework.org/schema/tx"
-           xmlns:aop="http://www.springframework.org/schema/aop"
-           xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
@@ -13,7 +13,7 @@
 
     <context:annotation-config/>
 
-    <context:component-scan base-package="org.vladmihalcea" />
+    <context:component-scan base-package="com.vladmihalcea"/>
 
     <context:property-placeholder location="/META-INF/spring/jdbc.properties"/>
 
@@ -31,7 +31,7 @@
         <property name="uniqueName" value="dataSource"/>
         <property name="minPoolSize" value="0"/>
         <property name="maxPoolSize" value="5"/>
-        <property name="allowLocalTransactions" value="false" />
+        <property name="allowLocalTransactions" value="false"/>
         <property name="driverProperties">
             <props>
                 <prop key="user">${jdbc.username}</prop>
@@ -79,9 +79,9 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <aop:aspectj-autoproxy />
+    <aop:aspectj-autoproxy/>
 
     <bean id="optimisticConcurrencyControlAspect"
-          class="org.vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
+          class="com.vladmihalcea.concurrent.aop.OptimisticConcurrencyControlAspect"/>
 
 </beans>

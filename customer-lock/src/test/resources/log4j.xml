@@ -7,8 +7,8 @@
             <param value="%-5p [%t]: %c{1} - %m%n" name="conversionPattern"/>
         </layout>
     </appender>
-    
-    <logger name="org.vladmihalcea">
+
+    <logger name="com.vladmihalcea">
         <level value="debug"/>
     </logger>
 
