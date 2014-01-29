@@ -200,11 +200,10 @@
         <xbean-spring.version>3.7</xbean-spring.version>
         <javax.jms.version>1.1</javax.jms.version>
         <commons-lang.version>2.5</commons-lang.version>
+        <db-util.version>0.0.1</db-util.version>
 
         <maven-failsafe-plugin.version>2.12</maven-failsafe-plugin.version>
         <embedmongo.plugin.version>0.1.6</embedmongo.plugin.version>
-
-        <db-util.version>0.0.1-SNAPSHOT</db-util.version>
 
         <embedmongo.port>51567</embedmongo.port>
     </properties>

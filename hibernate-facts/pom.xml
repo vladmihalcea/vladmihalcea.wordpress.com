@@ -352,7 +352,7 @@
         <commons.lang.version>2.5</commons.lang.version>
         <jooq.version>3.2.0</jooq.version>
         <btm.version>2.1.1</btm.version>
-        <db-util.version>0.0.1-SNAPSHOT</db-util.version>
+        <db-util.version>0.0.1</db-util.version>
     </properties>
 
 </project>
