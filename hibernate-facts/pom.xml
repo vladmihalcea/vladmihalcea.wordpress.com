@@ -90,6 +90,12 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>${commons-dbcp.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-codegen-maven</artifactId>
             <version>${jooq.version}</version>
@@ -243,9 +249,10 @@
                         <configuration>
                             <orderFile>ascending</orderFile>
                             <fileset>
-                                <basedir>${project.build.directory}/test-classes/hsqldb/</basedir>
+                                <basedir>${basedir}/</basedir>
                                 <includes>
-                                    <include>create_db.sql</include>
+                                    <include>target/test-classes/hsqldb/create_db.sql</include>
+                                    <include>src/test/resources/hsqldb/functions.sql</include>
                                 </includes>
                             </fileset>
                             <autocommit>true</autocommit>
@@ -352,6 +359,7 @@
         <commons.lang.version>2.5</commons.lang.version>
         <jooq.version>3.2.0</jooq.version>
         <btm.version>2.1.1</btm.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
         <db-util.version>0.0.1</db-util.version>
     </properties>
 
