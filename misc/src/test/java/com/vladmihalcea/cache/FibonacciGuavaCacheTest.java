@@ -17,7 +17,7 @@ public class FibonacciGuavaCacheTest {
     private Logger LOGGER = LoggerFactory.getLogger(FibonacciGuavaCacheTest.class);
 
     private LoadingCache<Integer, Integer> fibonacciCache = CacheBuilder.newBuilder()
-            .maximumSize(3)
+            .maximumSize(2)
             .build(new CacheLoader<Integer, Integer>() {
                 public Integer load(Integer i) {
                     if (i == 0)
