@@ -15,6 +15,7 @@
         <module>customer-lock</module>
         <module>hibernate-facts</module>
         <module>mongodb-facts</module>
+        <module>misc</module>
     </modules>
 
     
