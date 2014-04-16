@@ -21,7 +21,7 @@ public abstract class DataSourceConnectionTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceConnectionTest.class);
 
-    private static final int MAX_ITERATIONS = 1000;
+    private static final int MAX_ITERATIONS = 10;
 
     private Slf4jReporter logReporter;
 
