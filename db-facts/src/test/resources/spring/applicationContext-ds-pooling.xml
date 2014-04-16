@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.vladmihalcea"/>
+
+    <context:property-placeholder location="/META-INF/spring/jdbc.properties"/>
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="dataSourceClassName" value="${jdbc.dataSourceClassName}" />
+        <property name="dataSourceProperties">
+            <props>
+                <prop key="serverName">${jdbc.serverName}</prop>
+                <prop key="databaseName">${jdbc.databaseName}</prop>
+                <prop key="portNumber">${jdbc.portNumber}</prop>
+                <prop key="user">${jdbc.username}</prop>
+                <prop key="password">${jdbc.password}</prop>
+            </props>
+        </property>
+        <property name="minimumPoolSize" value="1"/>
+        <property name="maximumPoolSize" value="1"/>
+    </bean>
+
+</beans>
