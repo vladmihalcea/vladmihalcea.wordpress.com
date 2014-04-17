@@ -40,17 +40,12 @@ public abstract class DataSourceConnectionTest {
     }
 
     @Test
-    public void test() throws SQLException {
+    public void testOpenCloseConnections() throws SQLException {
         for (int i = 0; i < MAX_ITERATIONS; i++) {
-            openCloseConnection();
+            Timer.Context context = timer.time();
+            getDataSource().getConnection().close();
+            context.stop();
         }
         logReporter.report();
-    }
-
-    private void openCloseConnection() throws SQLException {
-        Timer.Context context = timer.time();
-        Connection connection = getDataSource().getConnection();
-        connection.close();
-        context.stop();
     }
 }
