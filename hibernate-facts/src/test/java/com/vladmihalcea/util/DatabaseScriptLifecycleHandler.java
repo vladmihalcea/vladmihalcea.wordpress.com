@@ -49,6 +49,7 @@ public class DatabaseScriptLifecycleHandler implements InitializingBean, Disposa
     private String commentPrefix = "--";
     private boolean continueOnError;
     private boolean ignoreFailedDrops;
+    private boolean transactional = true;
 
     public DatabaseScriptLifecycleHandler(DataSource dataSource,
                                           Resource[] initScripts,
@@ -98,6 +99,14 @@ public class DatabaseScriptLifecycleHandler implements InitializingBean, Disposa
         this.sqlScriptEncoding = sqlScriptEncoding;
     }
 
+    public boolean isTransactional() {
+        return transactional;
+    }
+
+    public void setTransactional(boolean transactional) {
+        this.transactional = transactional;
+    }
+
     public void afterPropertiesSet() throws Exception {
         initDatabase();
     }
@@ -107,36 +116,52 @@ public class DatabaseScriptLifecycleHandler implements InitializingBean, Disposa
     }
 
     public void initDatabase() {
+        if (transactional) {
+            transactionTemplate.execute(new TransactionCallback<Void>() {
+                @Override
+                public Void doInTransaction(TransactionStatus status) {
+                    runInitScripts();
+                    return null;
+                }
+            });
+        } else {
+            runInitScripts();
+        }
+    }
+
+    private void runInitScripts() {
         final ResourceDatabasePopulator resourceDatabasePopulator = createResourceDatabasePopulator();
-        transactionTemplate.execute(new TransactionCallback<Void>() {
+        jdbcTemplate.execute(new ConnectionCallback<Void>() {
             @Override
-            public Void doInTransaction(TransactionStatus status) {
-                jdbcTemplate.execute(new ConnectionCallback<Void>() {
-                    @Override
-                    public Void doInConnection(Connection con) throws SQLException, DataAccessException {
-                        resourceDatabasePopulator.setScripts(getInitScripts());
-                        resourceDatabasePopulator.populate(con);
-                        return null;
-                    }
-                });
+            public Void doInConnection(Connection con) throws SQLException, DataAccessException {
+                resourceDatabasePopulator.setScripts(getInitScripts());
+                resourceDatabasePopulator.populate(con);
                 return null;
             }
         });
     }
 
     public void destroyDatabase() {
+        if (transactional) {
+            transactionTemplate.execute(new TransactionCallback<Void>() {
+                @Override
+                public Void doInTransaction(TransactionStatus status) {
+                    runDestroyScripts();
+                    return null;
+                }
+            });
+        } else {
+            runDestroyScripts();
+        }
+    }
+
+    private void runDestroyScripts() {
         final ResourceDatabasePopulator resourceDatabasePopulator = createResourceDatabasePopulator();
-        transactionTemplate.execute(new TransactionCallback<Void>() {
+        jdbcTemplate.execute(new ConnectionCallback<Void>() {
             @Override
-            public Void doInTransaction(TransactionStatus status) {
-                jdbcTemplate.execute(new ConnectionCallback<Void>() {
-                    @Override
-                    public Void doInConnection(Connection con) throws SQLException, DataAccessException {
-                        resourceDatabasePopulator.setScripts(getDestroyScripts());
-                        resourceDatabasePopulator.populate(con);
-                        return null;
-                    }
-                });
+            public Void doInConnection(Connection con) throws SQLException, DataAccessException {
+                resourceDatabasePopulator.setScripts(getDestroyScripts());
+                resourceDatabasePopulator.populate(con);
                 return null;
             }
         });

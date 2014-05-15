@@ -58,18 +58,23 @@
                     <constructor-arg value="hsqldb/create_db.sql"/>
                 </bean>
                 <bean class="org.springframework.core.io.ClassPathResource">
-                    <constructor-arg value="hsqldb/functions.sql"/>
+                    <constructor-arg value="hsqldb/init_functions.sql"/>
                 </bean>
             </array>
         </constructor-arg>
         <constructor-arg name="destroyScripts">
             <array>
                 <bean class="org.springframework.core.io.ClassPathResource">
+                    <constructor-arg value="hsqldb/drop_functions.sql"/>
+                </bean>
+                <bean class="org.springframework.core.io.ClassPathResource">
                     <constructor-arg value="hsqldb/drop_db.sql"/>
                 </bean>
             </array>
         </constructor-arg>
     </bean>
+
+    <bean id="jooqSqlFunctionTimeService" class="com.vladmihalcea.service.impl.JooqSqlFunctionTimeService"/>
 
     <bean id="localTransactionJooqContext" class="org.jooq.impl.DSL" factory-method="using">
         <constructor-arg ref="localTransactionDataSource"/>

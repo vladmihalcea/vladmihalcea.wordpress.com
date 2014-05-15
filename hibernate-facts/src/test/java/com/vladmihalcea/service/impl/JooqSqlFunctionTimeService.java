@@ -4,16 +4,14 @@ import com.vladmihalcea.jooq.schema.routines.FormatTimestamp;
 import com.vladmihalcea.service.TimeService;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 
 /**
- * SpringSqlFunctionTimeService - SpringJdbc TimeService
+ * JooqSqlFunctionTimeService - Jooq TimeService
  *
  * @author Vlad Mihalcea
  */
-@Repository
 public class JooqSqlFunctionTimeService implements TimeService {
 
     @Autowired

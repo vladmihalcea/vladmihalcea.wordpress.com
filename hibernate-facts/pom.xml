@@ -120,6 +120,18 @@
         </dependency>
 
         <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikari.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>com.vladmihalcea</groupId>
             <artifactId>db-util</artifactId>
             <version>${db-util.version}</version>
@@ -252,7 +264,7 @@
                                 <basedir>${basedir}/</basedir>
                                 <includes>
                                     <include>target/test-classes/hsqldb/create_db.sql</include>
-                                    <include>src/test/resources/hsqldb/functions.sql</include>
+                                    <include>src/test/resources/hsqldb/init_functions.sql</include>
                                 </includes>
                             </fileset>
                             <autocommit>true</autocommit>
@@ -359,6 +371,7 @@
         <commons.lang.version>2.5</commons.lang.version>
         <jooq.version>3.2.0</jooq.version>
         <btm.version>2.1.1</btm.version>
+        <hikari.version>1.3.3</hikari.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <db-util.version>0.0.1</db-util.version>
     </properties>
