@@ -82,6 +82,12 @@
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring-data-jpa.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>commons-lang</groupId>
@@ -362,6 +368,7 @@
     <properties>
         <junit.version>4.8.1</junit.version>
         <spring.version>3.1.1.RELEASE</spring.version>
+        <spring-data-jpa.version>1.5.2.RELEASE</spring-data-jpa.version>
         <hsqldb.version>2.2.8</hsqldb.version>
         <hibernate.version>4.2.6.Final</hibernate.version>
         <hibernate.jpamodel.version>1.0.0.Final</hibernate.jpamodel.version>
