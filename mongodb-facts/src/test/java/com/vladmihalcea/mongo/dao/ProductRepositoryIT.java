@@ -30,6 +30,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -67,6 +69,8 @@ public class ProductRepositoryIT {
         Product product = new Product();
         product.setId(123L);
         product.setName("Tv");
+        product.setQuantity(BigInteger.TEN);
+        product.setDiscount(BigDecimal.valueOf(12.34));
         productRepository.save(product);
         Product savedProduct = productRepository.findOne(123L);
         assertEquals(savedProduct, product);
