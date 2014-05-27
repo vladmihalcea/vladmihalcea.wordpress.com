@@ -35,6 +35,22 @@
         </property>
     </bean>
 
+    <bean id="otherDataSource" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
+          destroy-method="close">
+        <property name="className" value="org.hsqldb.jdbc.pool.JDBCXADataSource"/>
+        <property name="uniqueName" value="otherDataSource"/>
+        <property name="minPoolSize" value="0"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="allowLocalTransactions" value="false"/>
+        <property name="driverProperties">
+            <props>
+                <prop key="user">${jdbc.username}</prop>
+                <prop key="password">${jdbc.password}</prop>
+                <prop key="url">${jdbc.url}</prop>
+            </props>
+        </property>
+    </bean>
+
     <bean id="proxyDataSource" class="net.ttddyy.dsproxy.support.ProxyDataSource">
         <property name="dataSource" ref="testDataSource"/>
         <property name="listener">

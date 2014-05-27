@@ -369,7 +369,7 @@
         <junit.version>4.8.1</junit.version>
         <spring.version>3.1.1.RELEASE</spring.version>
         <spring-data-jpa.version>1.5.2.RELEASE</spring-data-jpa.version>
-        <hsqldb.version>2.2.8</hsqldb.version>
+        <hsqldb.version>2.3.2</hsqldb.version>
         <hibernate.version>4.2.6.Final</hibernate.version>
         <hibernate.jpamodel.version>1.0.0.Final</hibernate.jpamodel.version>
         <hibernate.tools.version>4.0.0-CR1</hibernate.tools.version>
