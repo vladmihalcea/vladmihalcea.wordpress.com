@@ -33,6 +33,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -77,9 +78,24 @@ public class HibernateSaveIdOnlyEntityTest {
                 newChild.setParent(idOnlyParent);
                 entityManager.persist(newChild);
                 entityManager.flush();
+                SetChild otherChild = new SetChild();
+                otherChild.setName("Other");
+                idOnlyParent.addChild(otherChild);
+                entityManager.flush();
+                assertEquals(1, idOnlyParent.getChildren().size());
                 return null;
             }
         });
+
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus transactionStatus) {
+                SetParent parent = entityManager.find(SetParent.class, parentId);
+                assertEquals(3, parent.getChildren().size());
+                return null;
+            }
+        });
+
     }
 
     protected Long cleanAndSaveParent() {
