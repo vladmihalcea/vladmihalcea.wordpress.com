@@ -37,6 +37,10 @@ public class Parent {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public List<Child> getChildren() {
         return children;
     }
