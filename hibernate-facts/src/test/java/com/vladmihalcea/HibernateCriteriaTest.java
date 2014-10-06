@@ -117,6 +117,9 @@ public class HibernateCriteriaTest {
                 warehouseProductInfo3.setQuantity(11);
                 product3.addWarehouse(warehouseProductInfo3);
 
+                Product product = entityManager.find(Product.class, 1L);
+                //product.setQuantity(10);
+
                 entityManager.persist(product1);
                 entityManager.persist(product2);
                 entityManager.persist(product3);
