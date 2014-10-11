@@ -194,8 +194,6 @@
         <spring.version>3.2.2.RELEASE</spring.version>
         <spring-integration.version>2.2.3.RELEASE</spring-integration.version>
         <spring-data-mongodb.version>1.2.0.RELEASE</spring-data-mongodb.version>
-        <embedmongo.version>1.26</embedmongo.version>
-        <mongo.test.version>2.2.0</mongo.test.version>
         <activemq.version>5.5.0</activemq.version>
         <xbean-spring.version>3.7</xbean-spring.version>
         <javax.jms.version>1.1</javax.jms.version>
@@ -203,8 +201,9 @@
         <db-util.version>0.0.1</db-util.version>
 
         <maven-failsafe-plugin.version>2.12</maven-failsafe-plugin.version>
-        <embedmongo.plugin.version>0.1.6</embedmongo.plugin.version>
 
+        <embedmongo.plugin.version>0.1.12</embedmongo.plugin.version>
+        <mongo.test.version>2.6.1</mongo.test.version>
         <embedmongo.port>51567</embedmongo.port>
     </properties>
 
