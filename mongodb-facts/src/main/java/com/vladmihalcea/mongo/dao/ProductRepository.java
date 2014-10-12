@@ -17,16 +17,13 @@
 package com.vladmihalcea.mongo.dao;
 
 import com.vladmihalcea.mongo.model.Product;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * ProductRepository - Product Repository
  *
  * @author Vlad Mihalcea
  */
-public interface ProductRepository extends Repository<Product, Long>, ProductCustomRepository {
+public interface ProductRepository extends MongoRepository<Product, Long>, ProductCustomRepository {
 
-    Product save(Product entity);
-
-    Product findOne(Long id);
 }

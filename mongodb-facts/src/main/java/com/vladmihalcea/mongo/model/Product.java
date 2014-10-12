@@ -36,10 +36,12 @@ import java.math.BigInteger;
 @Document
 public class Product implements Serializable {
 
-    @Id
-    private Long id;
+    @Id()
+    private Long _id;
 
     private String name;
+
+    private BigDecimal price;
 
     private BigInteger quantity;
 
@@ -49,11 +51,11 @@ public class Product implements Serializable {
     private Long version;
 
     public Long getId() {
-        return id;
+        return _id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this._id = id;
     }
 
     public String getName() {
@@ -62,6 +64,14 @@ public class Product implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public BigInteger getQuantity() {
@@ -96,21 +106,21 @@ public class Product implements Serializable {
         Product that = (Product) obj;
 
         return new EqualsBuilder()
-                .append(id, that.id)
+                .append(_id, that._id)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(id)
+                .append(_id)
                 .hashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("id", id)
+                .append("id", _id)
                 .append("name", name)
                 .toString();
     }

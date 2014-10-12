@@ -32,6 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -59,11 +60,6 @@ public class ProductRepositoryIT {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @Before
-    public void init() {
-        mongoTemplate.dropCollection(Product.class);
-    }
-
     @Test
     public void testSave() {
         Product product = new Product();
@@ -86,6 +82,15 @@ public class ProductRepositoryIT {
             fail("Expected OptimisticLockingFailureException");
         } catch (OptimisticLockingFailureException e) {
         }
+        productRepository.delete(product);
+    }
+
+    @Test
+    public void testMigration() {
+        Product tv = productRepository.findOne(1L);
+        assertEquals("TV", tv.getName());
+        assertEquals(Long.valueOf(2), tv.getVersion());
+        assertEquals(BigDecimal.valueOf(189.99), tv.getPrice());
     }
 
     @Test

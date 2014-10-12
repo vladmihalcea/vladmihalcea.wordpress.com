@@ -41,6 +41,15 @@
         </property>
     </bean>
 
+    <bean id="mongeez" class="org.mongeez.MongeezRunner" depends-on="mongo">
+        <property name="mongo" ref="mongo"/>
+        <!--<property name="userName" value="${mongodb.username}"/>
+        <property name="password" value="${mongodb.password}"/>-->
+        <property name="executeEnabled" value="true"/>
+        <property name="dbName" value="${mongo.dbname}"/>
+        <property name="file" value="classpath:mongodb/migration/mongeez.xml"/>
+    </bean>
+
     <mongo:mapping-converter id="mappingConverter">
         <mongo:custom-converters base-package="com.vladmihalcea.**.mongo.converter"/>
     </mongo:mapping-converter>
