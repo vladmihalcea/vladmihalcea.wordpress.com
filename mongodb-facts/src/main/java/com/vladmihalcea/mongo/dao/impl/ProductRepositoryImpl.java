@@ -34,7 +34,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 public class ProductRepositoryImpl implements ProductCustomRepository {
 
     static interface Properties {
-        String ID = "id";
+        String ID = "_id";
         String NAME = "name";
     }
 
