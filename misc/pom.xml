@@ -67,6 +67,13 @@
             <version>${guava.version}</version>
         </dependency>
 
+        <!-- Joda -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-version}</version>
+        </dependency>
+
     </dependencies>
 
     <properties>
@@ -77,6 +84,7 @@
         <cglib.version>2.2</cglib.version>
         <commons.lang.version>2.5</commons.lang.version>        
         <guava.version>16.0.1</guava.version>
+        <joda-version>2.5</joda-version>
     </properties>
 
 </project>
