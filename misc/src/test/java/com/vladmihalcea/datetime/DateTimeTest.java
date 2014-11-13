@@ -32,26 +32,37 @@ public class DateTimeTest {
 
     @Test
     public void testJodaDateTimeWithUTCStrings() throws ParseException {
-        jodaParse("1970-01-01T00:00:00.200Z", 200L);
-        jodaParse("1970-01-01T00:00:00.200+0000", 200L);
-        jodaParse("1970-01-01T00:00:00.200+0100", 200L - 1000 * 60 * 60);
+        jodaTimeParse("1970-01-01T00:00:00.200Z", 200L);
+        jodaTimeParse("1970-01-01T00:00:00.200+0000", 200L);
+        jodaTimeParse("1970-01-01T00:00:00.200+0100", 200L - 1000 * 60 * 60);
     }
 
-    private void dateFormatParse(String pattern, String stringValue, long expectedEpoch) throws ParseException {
+    /**
+     * DateFormat parsing utility
+     * @param pattern date/time pattern
+     * @param dateTimeString date/time string value
+     * @param expectedNumericTimestamp expected millis since epoch
+     */
+    private void dateFormatParse(String pattern, String dateTimeString, long expectedNumericTimestamp) {
         try {
-            Date utcDate = new SimpleDateFormat(pattern).parse(stringValue);
-            if(expectedEpoch != utcDate.getTime()) {
-                LOGGER.warn("pattern: {}, date: {} actual epoch {} while expected epoch: {}", new Object[]{pattern, stringValue, utcDate.getTime(), expectedEpoch});
+            Date utcDate = new SimpleDateFormat(pattern).parse(dateTimeString);
+            if(expectedNumericTimestamp != utcDate.getTime()) {
+                LOGGER.warn("Pattern: {}, date: {} actual epoch {} while expected epoch: {}", new Object[]{pattern, dateTimeString, utcDate.getTime(), expectedNumericTimestamp});
             }
         } catch (ParseException e) {
-            LOGGER.warn("pattern: {}, date: {} threw {}", new Object[]{pattern, stringValue, e.getClass().getSimpleName()});
+            LOGGER.warn("Pattern: {}, date: {} threw {}", new Object[]{pattern, dateTimeString, e.getClass().getSimpleName()});
         }
     }
 
-    private void jodaParse(String stringValue, long expectedEpoch) {
-        Date utcDate = DateTime.parse(stringValue).toDate();
-        if(expectedEpoch != utcDate.getTime()) {
-            LOGGER.warn("date: {} actual epoch {} while expected epoch: {}", new Object[]{stringValue, utcDate.getTime(), expectedEpoch});
+    /**
+     * Joda-Time parsing utility
+     * @param dateTimeString date/time string value
+     * @param expectedNumericTimestamp expected millis since epoch
+     */
+    private void jodaTimeParse(String dateTimeString, long expectedNumericTimestamp) {
+        Date utcDate = DateTime.parse(dateTimeString).toDate();
+        if(expectedNumericTimestamp != utcDate.getTime()) {
+            LOGGER.warn("date: {} actual epoch {} while expected epoch: {}", new Object[]{dateTimeString, utcDate.getTime(), expectedNumericTimestamp});
         }
     }
 }
