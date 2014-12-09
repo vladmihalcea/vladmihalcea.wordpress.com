@@ -31,12 +31,8 @@ public class FibonacciServiceImpl implements FibonacciService {
     @Memoize
     public int compute(int i) {
         LOGGER.info("Calculate fibonacci for number {}", i);
-
-        if (i == 0)
+        if (i == 0 || i == 1)
             return i;
-
-        if (i == 1)
-            return 1;
         return fibonacciService.compute(i - 2) + fibonacciService.compute(i - 1);
     }
 }
