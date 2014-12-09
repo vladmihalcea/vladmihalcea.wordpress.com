@@ -20,13 +20,11 @@
     <bean id="btmConfig" factory-method="getConfiguration" class="bitronix.tm.TransactionManagerServices">
         <property name="serverId" value="spring-btm"/>
         <property name="warnAboutZeroResourceTransaction" value="true"/>
-        <property name="logPart1Filename" value="${btm.config.logpart1filename}"/>
-        <property name="logPart2Filename" value="${btm.config.logpart2filename}"/>
         <property name="journal" value="${btm.config.journal:disk}"/>
     </bean>
 
     <bean id="dataSource" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
-          destroy-method="close">
+          destroy-method="close" depends-on="btmConfig">
         <property name="className" value="${jdbc.driverClassName}"/>
         <property name="uniqueName" value="dataSource"/>
         <property name="minPoolSize" value="0"/>

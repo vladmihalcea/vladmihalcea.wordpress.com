@@ -30,11 +30,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicationContext-local-tx-test.xml"})
+@ContextConfiguration(locations = "classpath:spring/applicationContext-local-tx-test.xml")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class HibernateLocalTxTest {
+public class HibernateLocalTxIntegrationTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HibernateLocalTxTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HibernateLocalTxIntegrationTest.class);
 
     @PersistenceContext(unitName = "persistenceUnit")
     private EntityManager entityManager;

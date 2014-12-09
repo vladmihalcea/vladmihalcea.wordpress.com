@@ -83,6 +83,11 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>${spring-data-jpa.version}</version>
@@ -224,6 +229,10 @@
                                 <groupId>org.hibernate</groupId>
                                 <artifactId>hibernate-commons-annotations</artifactId>
                             </exclusion>
+                            <exclusion>
+                                <groupId>org.eclipse.core</groupId>
+                                <artifactId>runtime</artifactId>
+                            </exclusion>
                         </exclusions>
                     </dependency>
                     <dependency>
@@ -337,6 +346,47 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*IntegrationTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-failsafe-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Test</exclude>
+                    </excludes>
+                    <includes>
+                        <include>**/*IntegrationTest.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <configuration>
+                            <includes>
+                                <include>**/*IntegrationTest.java</include>
+                                <include>**/*IT.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*Test</exclude>
+                            </excludes>
+                        </configuration>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -366,13 +416,13 @@
     </reporting>
 
     <properties>
-        <junit.version>4.8.1</junit.version>
-        <spring.version>3.1.1.RELEASE</spring.version>
+        <junit.version>4.12</junit.version>
+        <spring.version>4.1.3.RELEASE</spring.version>
         <spring-data-jpa.version>1.5.2.RELEASE</spring-data-jpa.version>
         <hsqldb.version>2.3.2</hsqldb.version>
-        <hibernate.version>4.2.14.Final</hibernate.version>
+        <hibernate.version>4.3.7.Final</hibernate.version>
         <hibernate.jpamodel.version>1.0.0.Final</hibernate.jpamodel.version>
-        <hibernate.tools.version>4.0.0-CR1</hibernate.tools.version>
+        <hibernate.tools.version>4.3.1.CR1</hibernate.tools.version>
         <slf4j.version>1.6.1</slf4j.version>
         <cglib.version>2.2</cglib.version>
         <commons.lang.version>2.5</commons.lang.version>
@@ -381,6 +431,9 @@
         <hikari.version>1.3.3</hikari.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <db-util.version>0.0.1</db-util.version>
+
+        <maven-surefire-plugin.version>2.8.1</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>2.12</maven-failsafe-plugin.version>
     </properties>
 
 </project>
