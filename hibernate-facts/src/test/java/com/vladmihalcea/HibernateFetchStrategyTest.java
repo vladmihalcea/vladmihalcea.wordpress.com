@@ -32,8 +32,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -96,23 +98,61 @@ public class HibernateFetchStrategyTest {
         transactionTemplate.execute(new TransactionCallback<Void>() {
             @Override
             public Void doInTransaction(TransactionStatus transactionStatus) {
+                LOG.info("Fetch using find");
                 Product product = entityManager.find(Product.class, productId);
                 assertNotNull(product);
+                return null;
+            }
+        });
 
-                product = entityManager.createQuery(
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus transactionStatus) {
+                LOG.info("Fetch using JPQL");
+                Product product = entityManager.createQuery(
                         "select p " +
                                 "from Product p " +
                                 "where p.id = :productId", Product.class)
                         .setParameter("productId", productId)
                         .getSingleResult();
                 assertNotNull(product);
+                return null;
+            }
+        });
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus transactionStatus) {
 
-                product = entityManager.createQuery(
+                LOG.info("Fetch using Criteria");
+
+                CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+                CriteriaQuery<Product> cq = cb.createQuery(Product.class);
+                Root<Product> productRoot = cq.from(Product.class);
+                cq.where(cb.equal(productRoot.get("id"), productId));
+                Product product = entityManager.createQuery(cq).getSingleResult();
+                assertNotNull(product);
+                return null;
+            }
+        });
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus transactionStatus) {
+                LOG.info("Fetch using join fetch JPQL");
+
+                Product product = product = entityManager.createQuery(
                         "select p " +
                                 "from Product p " +
                                 "inner join fetch p.warehouseProductInfo " +
                                 "inner join fetch p.importer", Product.class).getSingleResult();
-                assertEquals(productId, product.getId());
+                assertNotNull(product);
+
+                return null;
+            }
+        });
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+            @Override
+            public Void doInTransaction(TransactionStatus transactionStatus) {
+
                 Image image = entityManager.createQuery(
                         "select i " +
                                 "from Image i " +

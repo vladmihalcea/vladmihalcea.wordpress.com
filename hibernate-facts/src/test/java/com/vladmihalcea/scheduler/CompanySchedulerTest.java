@@ -20,7 +20,7 @@ import javax.persistence.PersistenceContext;
  * @author Vlad Mihalcea
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicationContext-test.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext-scheduler.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CompanySchedulerTest {
 

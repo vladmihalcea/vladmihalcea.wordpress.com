@@ -333,6 +333,12 @@
                     <excludes>
                         <exclude>**/*IntegrationTest.java</exclude>
                     </excludes>
+                    <systemPropertyVariables>
+                        <bitronix.tm.journal.disk.logPart1Filename>${project.build.directory}/btm1.log
+                        </bitronix.tm.journal.disk.logPart1Filename>
+                        <bitronix.tm.journal.disk.logPart2Filename>${project.build.directory}/btm2.log
+                        </bitronix.tm.journal.disk.logPart2Filename>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
@@ -346,6 +352,12 @@
                     <includes>
                         <include>**/*IntegrationTest.java</include>
                     </includes>
+                    <systemPropertyVariables>
+                        <bitronix.tm.journal.disk.logPart1Filename>${project.build.directory}/btm1.log
+                        </bitronix.tm.journal.disk.logPart1Filename>
+                        <bitronix.tm.journal.disk.logPart2Filename>${project.build.directory}/btm2.log
+                        </bitronix.tm.journal.disk.logPart2Filename>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>
@@ -449,6 +461,13 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>hibernate-4-2</id>
+            <properties>
+                <hibernate.version>4.2.14.Final</hibernate.version>
+                <hibernate.tools.version>4.0.0-CR1</hibernate.tools.version>
+            </properties>
         </profile>
     </profiles>
 
