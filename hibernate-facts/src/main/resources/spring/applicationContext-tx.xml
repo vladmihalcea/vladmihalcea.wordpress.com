@@ -64,6 +64,7 @@
     <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
         <property name="transactionManager" ref="jtaTransactionManager"/>
         <property name="userTransaction" ref="jtaTransactionManager"/>
+        <property name="allowCustomIsolationLevels" value="true"/>
     </bean>
 
     <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
