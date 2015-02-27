@@ -17,9 +17,6 @@
 package com.vladmihalcea;
 
 import com.vladmihalcea.hibernate.model.component.Post;
-import com.vladmihalcea.hibernate.model.eagerset.SetChild;
-import com.vladmihalcea.hibernate.model.eagerset.SetParent;
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -36,8 +33,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PessimisticLockScope;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -62,7 +59,7 @@ public class HibernateCascadeLockComponentTest {
             @Override
             public Void doInTransaction(TransactionStatus transactionStatus) {
                 Post post = entityManager.find(Post.class, parentId);
-                entityManager.lock(post, LockModeType.PESSIMISTIC_WRITE, Collections.singletonMap("javax.persistence.lock.scope", PessimisticLockScope.EXTENDED));
+                entityManager.lock(post, LockModeType.PESSIMISTIC_WRITE, Collections.singletonMap("javax.persistence.lock.scope", (Object) PessimisticLockScope.EXTENDED));
                 return null;
             }
         });
