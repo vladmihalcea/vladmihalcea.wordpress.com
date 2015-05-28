@@ -25,6 +25,7 @@
     <logger name="org.hibernate" level="warn"/>
     <logger name="org.hibernate.SQL" level="info"/>
     <logger name="org.hibernate.util.JDBCExceptionReporter" level="error"/>
+    <logger name="net.sf.ehcache.transaction.manager.selector.FactorySelector" level="error"/>
 
     <logger name="com.vladmihalcea" level="debug"/>
     <root>
