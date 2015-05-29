@@ -22,21 +22,11 @@ import com.vladmihalcea.hibernate.model.cache.Repository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.junit.Assert.*;
 
@@ -68,7 +58,7 @@ public class HibernateCacheTest extends AbstractTest {
 
     @Test
     public void testRepositoryEntityUpdate() {
-        LOGGER.info("Read-write entities are write-through on updating");
+        LOGGER.info("Transactional entities are write-through on updating");
         doInTransaction((entityManager) -> {
             Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
             repository.setName("High-Performance Hibernate");
@@ -85,9 +75,40 @@ public class HibernateCacheTest extends AbstractTest {
         });
     }
 
+    private final CountDownLatch aliceLatch = new CountDownLatch(1);
+    private final CountDownLatch bobLatch = new CountDownLatch(1);
+
+    @Test
+    public void testRepositoryEntityConcurrentUpdate() {
+        LOGGER.info("Transactional entity concurrent update");
+        doInTransaction((entityManager) -> {
+            Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
+            repository.setName("High-Performance Hibernate");
+            entityManager.flush();
+            executeAsync(() -> {
+                doInTransaction((_entityManager) -> {
+                    Repository _repository = entityManager.find(Repository.class, repositoryReference.getId());
+                    _repository.setName("High-Performance Hibernate Book");
+                    aliceLatch.countDown();
+                    awaitOnLatch(bobLatch);
+                });
+            });
+            sleep(500);
+            awaitOnLatch(aliceLatch);
+        });
+        bobLatch.countDown();
+        for (int i = 0; i < 3; i++) {
+            doInTransaction((entityManager) -> {
+                LOGGER.info("Reload entity after updating");
+                Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
+                LOGGER.info("Repository name is {}", repository.getName());
+            });
+        }
+    }
+
     @Test
     public void testRepositoryEntityDelete() {
-        LOGGER.info("Read-write entities are deletable");
+        LOGGER.info("Transactional entities are deletable");
         doInTransaction((entityManager) -> {
             Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
             entityManager.remove(repository);
@@ -99,7 +120,7 @@ public class HibernateCacheTest extends AbstractTest {
 
     @Test
     public void testIsolationLevel() {
-        LOGGER.info("Read-write entities are deletable");
+        LOGGER.info("Transactional entities are deletable");
         doInTransaction((entityManager) -> {
             Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
             executeSync(() -> {
