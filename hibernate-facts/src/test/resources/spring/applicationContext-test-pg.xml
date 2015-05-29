@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <import resource="classpath:spring/applicationContext-tx-pg.xml"/>
+
+    <bean id="localTransactionDataSource" class="org.postgresql.ds.PGSimpleDataSource">
+        <property name="databaseName" value="${jdbc.database}"/>
+        <property name="serverName" value="${jdbc.host}"/>
+        <property name="portNumber" value="${jdbc.port}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <bean id="testDataSource" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
+          destroy-method="close" depends-on="btmConfig">
+        <property name="uniqueName" value="dataSource"/>
+        <property name="className" value="${jdbc.dataSourceClassName}"/>
+        <property name="minPoolSize" value="0"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="allowLocalTransactions" value="true"/>
+        <property name="driverProperties">
+            <props>
+                <prop key="user">${jdbc.username}</prop>
+                <prop key="password">${jdbc.password}</prop>
+                <prop key="databaseName">${jdbc.database}</prop>
+                <prop key="serverName">${jdbc.host}</prop>
+                <prop key="portNumber">${jdbc.port}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="proxyDataSource" class="net.ttddyy.dsproxy.support.ProxyDataSource">
+        <property name="dataSource" ref="testDataSource"/>
+        <property name="listener">
+            <bean class="net.ttddyy.dsproxy.listener.ChainListener">
+                <property name="listeners">
+                    <list>
+                        <bean class="net.ttddyy.dsproxy.listener.CommonsQueryLoggingListener">
+                            <property name="logLevel" value="INFO"/>
+                        </bean>
+                        <bean class="net.ttddyy.dsproxy.listener.DataSourceQueryCountListener"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <alias name="proxyDataSource" alias="dataSource"/>
+
+</beans>

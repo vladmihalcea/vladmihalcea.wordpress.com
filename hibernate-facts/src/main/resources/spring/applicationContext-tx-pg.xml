@@ -15,7 +15,7 @@
 
     <context:component-scan base-package="com.vladmihalcea"/>
 
-    <context:property-placeholder location="/META-INF/spring/jdbc.properties"/>
+    <context:property-placeholder location="/META-INF/spring/jdbc-pg.properties"/>
 
     <bean id="btmConfig" factory-method="getConfiguration" class="bitronix.tm.TransactionManagerServices">
         <property name="serverId" value="spring-btm"/>
@@ -25,16 +25,17 @@
 
     <bean id="dataSource" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init"
           destroy-method="close" depends-on="btmConfig">
-        <property name="className" value="${jdbc.driverClassName}"/>
         <property name="uniqueName" value="dataSource"/>
         <property name="minPoolSize" value="0"/>
         <property name="maxPoolSize" value="5"/>
-        <property name="allowLocalTransactions" value="false"/>
+        <property name="allowLocalTransactions" value="true"/>
         <property name="driverProperties">
             <props>
                 <prop key="user">${jdbc.username}</prop>
                 <prop key="password">${jdbc.password}</prop>
-                <prop key="url">${jdbc.url}</prop>
+                <prop key="databaseName">${jdbc.database}</prop>
+                <prop key="serverName">${jdbc.host}</prop>
+                <prop key="portNumber">${jdbc.port}</prop>
             </props>
         </property>
     </bean>
@@ -58,6 +59,7 @@
         <property name="jpaProperties">
             <map>
                 <entry key="hibernate.dialect" value="${jdbc.dialect}"/>
+                <entry key="hibernate.hbm2ddl.auto" value="create-drop"/>
             </map>
         </property>
     </bean>

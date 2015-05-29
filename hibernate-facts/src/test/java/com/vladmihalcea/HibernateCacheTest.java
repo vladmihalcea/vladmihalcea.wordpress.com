@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicationContext-test.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext-test-pg.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class HibernateCacheTest extends AbstractTest {
 
