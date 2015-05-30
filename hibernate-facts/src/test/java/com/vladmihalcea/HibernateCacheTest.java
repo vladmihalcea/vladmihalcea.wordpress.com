@@ -27,6 +27,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 
@@ -79,13 +82,14 @@ public class HibernateCacheTest extends AbstractTest {
     private final CountDownLatch bobLatch = new CountDownLatch(1);
 
     @Test
-    public void testRepositoryEntityConcurrentUpdate() {
+    public void testRepositoryEntityConcurrentUpdate() throws ExecutionException, InterruptedException {
         LOGGER.info("Transactional entity concurrent update");
+        final AtomicReference<Future<?>> bobTransactionOutcomeHolder = new AtomicReference<>();
         doInTransaction((entityManager) -> {
             Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
             repository.setName("High-Performance Hibernate");
             entityManager.flush();
-            executeAsync(() -> {
+            Future<?> bobTransactionOutcome = executeAsync(() -> {
                 doInTransaction((_entityManager) -> {
                     Repository _repository = entityManager.find(Repository.class, repositoryReference.getId());
                     _repository.setName("High-Performance Hibernate Book");
@@ -93,17 +97,22 @@ public class HibernateCacheTest extends AbstractTest {
                     awaitOnLatch(bobLatch);
                 });
             });
+            bobTransactionOutcomeHolder.set(bobTransactionOutcome);
             sleep(500);
             awaitOnLatch(aliceLatch);
         });
+        doInTransaction((entityManager) -> {
+            LOGGER.info("Reload entity after Alice update");
+            Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
+            LOGGER.info("Repository name is {}", repository.getName());
+        });
         bobLatch.countDown();
-        for (int i = 0; i < 3; i++) {
-            doInTransaction((entityManager) -> {
-                LOGGER.info("Reload entity after updating");
-                Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
-                LOGGER.info("Repository name is {}", repository.getName());
-            });
-        }
+        bobTransactionOutcomeHolder.get().get();
+        doInTransaction((entityManager) -> {
+            LOGGER.info("Reload entity after Bob update");
+            Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
+            LOGGER.info("Repository name is {}", repository.getName());
+        });
     }
 
     @Test
