@@ -26,10 +26,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring/applicationContext-test.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext-test-pg.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class HibernateCacheTest extends AbstractTest {
 
@@ -56,7 +61,7 @@ public class HibernateCacheTest extends AbstractTest {
 
     @Test
     public void testRepositoryEntityUpdate() {
-        LOGGER.info("Read-write entities are write-through on updating");
+        LOGGER.info("Transactional entities are write-through on updating");
         doInTransaction((entityManager) -> {
             Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
             repository.setName("High-Performance Hibernate");
@@ -73,9 +78,46 @@ public class HibernateCacheTest extends AbstractTest {
         });
     }
 
+    private final CountDownLatch aliceLatch = new CountDownLatch(1);
+    private final CountDownLatch bobLatch = new CountDownLatch(1);
+
+    @Test
+    public void testRepositoryEntityConcurrentUpdate() throws ExecutionException, InterruptedException {
+        LOGGER.info("Transactional entity concurrent update");
+        final AtomicReference<Future<?>> bobTransactionOutcomeHolder = new AtomicReference<>();
+        doInTransaction((entityManager) -> {
+            Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
+            repository.setName("High-Performance Hibernate");
+            entityManager.flush();
+            Future<?> bobTransactionOutcome = executeAsync(() -> {
+                doInTransaction((_entityManager) -> {
+                    Repository _repository = entityManager.find(Repository.class, repositoryReference.getId());
+                    _repository.setName("High-Performance Hibernate Book");
+                    aliceLatch.countDown();
+                    awaitOnLatch(bobLatch);
+                });
+            });
+            bobTransactionOutcomeHolder.set(bobTransactionOutcome);
+            sleep(500);
+            awaitOnLatch(aliceLatch);
+        });
+        doInTransaction((entityManager) -> {
+            LOGGER.info("Reload entity after Alice update");
+            Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
+            LOGGER.info("Repository name is {}", repository.getName());
+        });
+        bobLatch.countDown();
+        bobTransactionOutcomeHolder.get().get();
+        doInTransaction((entityManager) -> {
+            LOGGER.info("Reload entity after Bob update");
+            Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
+            LOGGER.info("Repository name is {}", repository.getName());
+        });
+    }
+
     @Test
     public void testRepositoryEntityDelete() {
-        LOGGER.info("Read-write entities are deletable");
+        LOGGER.info("Transactional entities are deletable");
         doInTransaction((entityManager) -> {
             Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
             entityManager.remove(repository);
@@ -87,7 +129,7 @@ public class HibernateCacheTest extends AbstractTest {
 
     @Test
     public void testIsolationLevel() {
-        LOGGER.info("Read-write entities are deletable");
+        LOGGER.info("Transactional entities are deletable");
         doInTransaction((entityManager) -> {
             Repository repository = entityManager.find(Repository.class, repositoryReference.getId());
             executeSync(() -> {

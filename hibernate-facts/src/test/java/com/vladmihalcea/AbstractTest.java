@@ -122,6 +122,10 @@ public abstract class AbstractTest {
         return executorService.submit(callable);
     }
 
+    protected <V> Future<V> executeAsync(Callable<V> callable) {
+        return executorService.submit(callable);
+    }
+
     protected LockType lockType() {
         return LockType.LOCKS;
     }
