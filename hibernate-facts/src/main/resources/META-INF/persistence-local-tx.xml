@@ -12,6 +12,12 @@
                       value="class, hbm"/>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.HSQLDialect"/>
+
+            <property name="hibernate.cache.use_second_level_cache"
+                      value="true"/>
+            <property name="hibernate.cache.region.factory_class"
+                      value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>
+            
             <!--<property name="hibernate.hbm2ddl.auto"
                       value="update"/>-->
         </properties>

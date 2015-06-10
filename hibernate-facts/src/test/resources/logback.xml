@@ -24,6 +24,7 @@
     <logger name="bitronix.tm" level="warn"/>
     <logger name="org.hibernate" level="warn"/>
     <logger name="org.hibernate.SQL" level="info"/>
+    <logger name="org.hibernate.engine.transaction.internal.jta.JtaTransaction" level="debug"/>
     <logger name="org.hibernate.util.JDBCExceptionReporter" level="error"/>
     <logger name="net.sf.ehcache.transaction.manager.selector.FactorySelector" level="error"/>
 

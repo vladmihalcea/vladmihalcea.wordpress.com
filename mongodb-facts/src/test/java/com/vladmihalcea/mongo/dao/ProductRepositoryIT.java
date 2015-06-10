@@ -18,7 +18,7 @@ package com.vladmihalcea.mongo.dao;
 
 import com.vladmihalcea.mongo.model.Product;
 import com.vladmihalcea.mongo.service.ProductService;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * ProductRepositoryIT - ProductRepository IT
