@@ -22,6 +22,7 @@
 
     <logger name="org.springframework" level="warn"/>
     <logger name="bitronix.tm" level="warn"/>
+
     <logger name="org.hibernate" level="warn"/>
     <logger name="org.hibernate.SQL" level="info"/>
     <logger name="org.hibernate.engine.transaction.internal.jta.JtaTransaction" level="debug"/>
@@ -29,6 +30,8 @@
     <logger name="org.hibernate.event.internal" level="info"/>
     <logger name="org.hibernate.engine.transaction.internal" level="debug"/>
     <logger name="net.sf.ehcache.transaction.manager.selector.FactorySelector" level="error"/>
+
+    <logger name="net.ttddyy.dsproxy.listener" level="debug"/>
 
     <logger name="com.vladmihalcea" level="debug"/>
     <root>
