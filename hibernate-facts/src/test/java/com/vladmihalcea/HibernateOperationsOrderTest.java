@@ -16,16 +16,24 @@
 
 package com.vladmihalcea;
 
+import java.util.Iterator;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+
+import org.hibernate.exception.ConstraintViolationException;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vladmihalcea.hibernate.model.store.Company;
 import com.vladmihalcea.hibernate.model.store.Image;
 import com.vladmihalcea.hibernate.model.store.Product;
 import com.vladmihalcea.hibernate.model.store.WarehouseProductInfo;
-import org.hibernate.exception.ConstraintViolationException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,11 +41,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -112,8 +115,8 @@ public class HibernateOperationsOrderTest {
                     assertEquals(1, sideImage.getIndex());
 
                     Image backImage = new Image();
-                    sideImage.setName("back image");
-                    sideImage.setIndex(1);
+                    backImage.setName("back image");
+                    backImage.setIndex(1);
 
                     product.removeImage(sideImage);
                     product.addImage(backImage);
