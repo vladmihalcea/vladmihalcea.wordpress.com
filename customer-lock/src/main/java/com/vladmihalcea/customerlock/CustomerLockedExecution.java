@@ -23,19 +23,25 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * CustomerLockSerializedExecution - Lock execution based for a given customer
+ * CustomerLockedExecution - Lock execution based for a given customer
  *
  * @author Vlad Mihalcea
  */
-public class CustomerLockSerializedExecution<K> {
+public class CustomerLockedExecution<K> {
 
     private Map<K, ReentrantLock> lockMap = new HashMap<K, ReentrantLock>();
 
-    private synchronized Lock getLock(K customerId) {
+    private Lock getLock(K customerId) {
         ReentrantLock lock = lockMap.get(customerId);
         if (lock == null) {
-            lock = new ReentrantLock();
-            lockMap.put(customerId, lock);
+            synchronized (this) {
+                lock = lockMap.get(customerId);
+
+                if (lock == null) {
+                    lock = new ReentrantLock();
+                    lockMap.put(customerId, lock);
+                }
+            }
         }
         return lock;
     }

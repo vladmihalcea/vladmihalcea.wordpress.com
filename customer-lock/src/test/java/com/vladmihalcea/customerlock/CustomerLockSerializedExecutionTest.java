@@ -20,10 +20,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,66 +34,64 @@ public class CustomerLockSerializedExecutionTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomerLockSerializedExecutionTest.class);
 
-    private CustomerLockSerializedExecution<Long> customerLockSerializedExecution = new CustomerLockSerializedExecution<Long>();
+    private CustomerLockedExecution<Long> execution = new CustomerLockedExecution<>();
 
-    private CopyOnWriteArrayList<Long> buffer = new CopyOnWriteArrayList<Long>();
+    private CopyOnWriteArrayList<Long> buffer = new CopyOnWriteArrayList<>();
 
-    public static final int appendsNumber = 3;
+    private static final int appendTries = 3;
 
-    private class TestCallable implements Callable<Void> {
+    private final int threadCount = 10;
 
-        private final long index;
-
-        private TestCallable(long index) {
-            this.index = index;
-        }
-
-        @Override
-        public Void call() throws Exception {
-            LOG.info("Running thread index {}", index);
-            for (int i = 0; i < appendsNumber; i++) {
-                long number = index + i;
-                LOG.info("Adding {}", number);
-                buffer.add(number);
-            }
-            return null;
-        }
-    }
+    private ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
     @Test
     public void testAwaitExecutionForSameIntegratedSource() throws InterruptedException {
-        final int threadsNumber = 10;
+        final CountDownLatch startLatch = new CountDownLatch(threadCount + 1);
+        final CountDownLatch endLatch = new CountDownLatch(threadCount + 1);
 
-        final AtomicInteger atomicInteger = new AtomicInteger();
-        final CountDownLatch startLatch = new CountDownLatch(threadsNumber + 1);
-        final CountDownLatch endLatch = new CountDownLatch(threadsNumber + 1);
+        for (long i = 0; i < threadCount; i++) {
+            final long index = i * threadCount;
 
-        for (; atomicInteger.get() < threadsNumber; atomicInteger.incrementAndGet()) {
-            final long index = (long) atomicInteger.get() * threadsNumber;
             LOG.info("Scheduling thread index {}", index);
-            Thread testThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+
+            executorService.submit(
+                () -> {
                     try {
                         startLatch.countDown();
                         startLatch.await();
-                        customerLockSerializedExecution.lockExecution(0L, new TestCallable(index));
+                        execution.lockExecution(
+                            0L,
+                            () -> {
+                                LOG.info("Running thread index {}", index);
+                                for (int j = 0; j < appendTries; j++) {
+                                    long number = index + j;
+                                    LOG.info("Adding {}", number);
+                                    buffer.add(number);
+                                }
+
+                                return null;
+                            }
+                        );
                         endLatch.countDown();
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
                 }
-            });
-            testThread.start();
+            );
         }
+
         startLatch.countDown();
+
         LOG.info("Waiting for threads to be done");
+
         endLatch.countDown();
         endLatch.await();
-        LOG.info("Threads are done");
-        for (int i = 0; i < threadsNumber; i += appendsNumber) {
+
+        LOG.info("Threads are done processing");
+
+        for (int i = 0; i < threadCount; i += appendTries) {
             long reference = buffer.get(i);
-            for (int j = 0; j < appendsNumber; j++) {
+            for (int j = 0; j < appendTries; j++) {
                 assertEquals(reference + j, (long) buffer.get(i + j));
             }
         }
@@ -104,37 +99,52 @@ public class CustomerLockSerializedExecutionTest {
 
     @Test
     public void testAwaitExecutionForDifferentIntegratedSource() throws InterruptedException {
-        final int threadsNumber = 10;
+        final CountDownLatch startLatch = new CountDownLatch(threadCount + 1);
+        final CountDownLatch endLatch = new CountDownLatch(threadCount + 1);
 
-        final AtomicInteger atomicInteger = new AtomicInteger();
-        final CountDownLatch startLatch = new CountDownLatch(threadsNumber + 1);
-        final CountDownLatch endLatch = new CountDownLatch(threadsNumber);
+        for (long i = 1; i <= threadCount; i++) {
+            final long index = i * threadCount;
 
-        for (; atomicInteger.get() < threadsNumber; atomicInteger.incrementAndGet()) {
-            final long index = (long) atomicInteger.get() * threadsNumber;
             LOG.info("Scheduling thread index {}", index);
-            Thread testThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+
+            executorService.submit(
+                () -> {
                     try {
                         startLatch.countDown();
                         startLatch.await();
-                        customerLockSerializedExecution.lockExecution(index, new TestCallable(index));
+                        execution.lockExecution(
+                            index,
+                            () -> {
+                                LOG.info("Running thread index {}", index);
+                                for (int j = 0; j < appendTries; j++) {
+                                    long number = index + j;
+                                    LOG.info("Adding {}", number);
+                                    buffer.add(number);
+                                }
+
+                                return null;
+                            }
+                        );
                         endLatch.countDown();
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
                 }
-            });
-            testThread.start();
+            );
         }
+
         startLatch.countDown();
+
         LOG.info("Waiting for threads to be done");
+
+        endLatch.countDown();
         endLatch.await();
-        LOG.info("Threads are done");
-        for (long i = 0; i < threadsNumber; i++) {
-            long index = i * threadsNumber;
-            for (long j = 0; j < appendsNumber; j++) {
+
+        LOG.info("Threads are done processing");
+
+        for (long i = 1; i <= threadCount; i++) {
+            long index = i * threadCount;
+            for (long j = 0; j < appendTries; j++) {
                 assertTrue("Buffer doesn't contain" + (index + j), buffer.contains(index + j));
             }
         }
