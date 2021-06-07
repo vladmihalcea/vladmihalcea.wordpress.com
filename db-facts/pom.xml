@@ -77,7 +77,7 @@
     <properties>
 
         <slf4j.version>1.6.1</slf4j.version>
-        <logback.version>1.0.13</logback.version>
+        <logback.version>1.2.0</logback.version>
         <spring.version>3.1.1.RELEASE</spring.version>
         <codahale.metrics.version>3.0.2</codahale.metrics.version>
         <junit.version>4.8.1</junit.version>
